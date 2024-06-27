@@ -1,0 +1,57 @@
+
+{
+  "port": 4003,
+  "heartbeat": true,
+  "register": true,
+  "host": "",
+  "endpoints": [],
+  "log_level": "info",
+  "statsd": {},
+  "api": {
+    "apiURL": "https://localhost:8080",
+    "username": "root@openhim.org",
+    "password": "Mike@openhim13",
+    "trustSelfSigned": true
+  },
+  "mediatorConf": {
+    "urn": "urn:uuid:a15c3d48-0686-4c9b-b375-f68d2f244a33",
+    "version": "0.0.1",
+    "name": "FIREtoDHIS2",
+    "description": "FIRE data to DHIS2 object adapter mediator",
+    "defaultChannelConfig": [],
+    "endpoints": [
+      {
+        "name": "Fetch",
+        "host": "localhost",
+        "path": "/fetch",
+        "port": "4002",
+        "primary": true,
+        "type": "http"
+      }
+    ],
+    "configDefs": [
+      {
+        "param": "settings",
+        "displayName": "Settings",
+        "description": "Mediator Settings",
+        "type": "struct",
+        "array": true,
+        "template": [
+          {
+            "param": "fetch",
+            "displayName": "Fetch",
+            "description": "Should this record be fetched?",
+            "type": "bool"
+          }
+        ]
+      }
+    ],
+    "config": {
+      "settings": [
+        {
+          "settings": "true"
+        }
+      ]
+    }
+  }
+} 

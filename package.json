@@ -1,0 +1,27 @@
+{
+  "name": "hapi-fire-mediator",
+  "version": "1.0.0",
+  "description": "Mediator for hapi-fire and dhis2",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Habib Bushira",
+  "license": "ISC",
+  "dependencies": {
+    "@bull-board/api": "^5.9.2",
+    "@bull-board/express": "^5.9.2",
+    "@bull-board/ui": "^5.9.2",
+    "axios": "^1.7.2",
+    "bull": "^4.11.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.19.2",
+    "https": "^1.0.0",
+    "nodejs-base64-encode": "^1.1.0",
+    "openhim-mediator-utils": "^0.2.4",
+    "requestretry": "^7.0.2",
+    "urijs": "^1.19.7",
+    "winston": "^1.1.1"
+  }
+}
