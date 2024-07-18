@@ -1,60 +1,84 @@
 {
-    "urn": "urn:mediator:hapi_fire_to_dhis2",
-    "version": "0.0.1",
-    "name": "HAPIFIRE-DHIS2",
-    "description": "Facility exchange from MFR to DHIS2",
-    "defaultChannelConfig": [
+  "urn": "urn:mediator:hapi_fire_to_dhis2",
+  "version": "0.0.1",
+  "name": "HAPIFIRE-DHIS2",
+  "description": "Facility exchange from MFR to DHIS2",
+  "defaultChannelConfig": [
+  
+    {
+      "name": "Updated Facility: MFR-DHIS2",
+      "urlPattern": "/fetchLatestUpdated",
+      "alerts": [],
+      "txRerunAcl": [],
+      "txViewFullAcl": [],
+      "txViewAcl": [],
+      "properties": [],
+      "matchContentTypes": [],
+      "routes": [
+        {
+          "name": "Fetch Route",
+          "host": "localhost",
+          "port": "4000",
+          "path": "/fetchLatestUpdated",
+          "primary": true,
+          "type": "http"
+        }
+      ],
+      "allow": [
+        "admin"
+      ],
+      "type": "http"
+    },
+    {
+      "name": "Webhook: MFR-DHIS2",
+      "urlPattern": "/webhook/:id",
+      "alerts": [],
+      "txRerunAcl": [],
+      "txViewFullAcl": [],
+      "txViewAcl": [],
+      "properties": [],
+      "matchContentTypes": [],
+      "routes": [
+        {
+          "name": "Fetch Route",
+          "host": "localhost",
+          "port": "4000",
+          "path": "/webhook/:id",
+          "primary": true,
+          "type": "http"
+        }
+      ],
+      "allow": [
+        "admin"
+      ],
+      "type": "http"
+    }
     
-      {
-        "name": "Updated Facility: MFR-DHIS2",
-        "urlPattern": "/fetchLatestUpdated",
-        "alerts": [],
-        "txRerunAcl": [],
-        "txViewFullAcl": [],
-        "txViewAcl": [],
-        "properties": [],
-        "matchContentTypes": [],
-        "routes": [
-          {
-            "name": "Fetch Route",
-            "host": "localhost",
-            "port": "4000",
-            "path": "/fetchLatestUpdated",
-            "primary": true,
-            "type": "http"
-          }
-        ],
-        "allow": [
-          "admin"
-        ],
-        "type": "http"
-      }
-      
-    ],
-    "endpoints": [
-      {
-        "name": "fetch Route",
-        "host": "localhost",
-        "path": "/fetch",
-        "port": "3001",
-        "primary": true,
-        "type": "http"
-      }
-    ],
-    "configDefs": [
-      {
-        "param": "HAPIFIREURL",
-        "displayName": "HAPI FIRE URL",
-        "description": "The URL of the HAPI FIRE service",
-        "type": "string",
-        "template": []
-      },
-      {
-        "param": "DHIS2URL",
-        "displayName": "DHIS2 Upstream URL",
-        "description": "The URL of the DHIS2 service upstream of the mediator",
-        "type": "string",
-        "template": []
-      }
-    ]
-  }
+  ],
+  "endpoints": [
+    {
+      "name": "fetch Route",
+      "host": "localhost",
+      "path": "/fetch",
+      "port": "3001",
+      "primary": true,
+      "type": "http"
+    }
+  ],
+  "configDefs": [
+    {
+      "param": "HAPIFIREURL",
+      "displayName": "HAPI FIRE URL",
+      "description": "The URL of the HAPI FIRE service",
+      "type": "string",
+      "template": []
+    },
+    {
+      "param": "DHIS2URL",
+      "displayName": "DHIS2 Upstream URL",
+      "description": "The URL of the DHIS2 service upstream of the mediator",
+      "type": "string",
+      "template": []
+    }
+  ]
+}
