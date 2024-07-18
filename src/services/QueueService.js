@@ -18,7 +18,6 @@ const queueOptions = {
 
 const latestUpdatedQueue = new Bull("Latest Updated", queueOptions);
 const webhookQueue = new Bull("Webhook", queueOptions);
-const failedQueue = new Bull("Failed", queueOptions);
 
 
 
@@ -79,7 +78,6 @@ latestUpdatedQueue.process(async (payload, done) => {
 
                     // console.log(`${dhis2Facility? "Updating":"Creating"} Facility with id ${entry.resource.id}`);
                     await dhis2Service.saveFacilityToDataStore(entry);
-
                 }
 
                 lastUpdate = mfrResponseData.entry[mfrResponseData.entry.length - 1].resource.meta.lastUpdated;
@@ -134,6 +132,26 @@ DHIS2Service.prototype.getFacilitiesByMfrIds = async function (mfrIds) {
         throw error;
     }
 };
+DHIS2Service.prototype.getFacilityByMfrId = async function (mfrId) {
+    try {
+        const response = await axios.get(`${process.env.DHIS2_HOST}/organisationUnits`, {
+            params: {
+                fields: 'name,id,attributeValues,lastUpdated',
+                'filter[0]': `attributeValues.attribute.id:eq:${process.env.DHIS2_ATTRIBUTE_ID}`,
+                'filter[1]': `attributeValues.value:eq:${mfrId}`
+            },
+            auth: {
+                username: process.env.DHIS2_USER,
+                password: process.env.DHIS2_PASSWORD
+            }
+        });
+        return response.data.organisationUnits;
+    } catch (error) {
+        winston.error(`Error fetching facility from DHIS2: ${error.message}`);
+        throw error;
+    }
+};
+
 
 
 webhookQueue.process(async (payload, done) => {
@@ -141,41 +159,26 @@ webhookQueue.process(async (payload, done) => {
 });
 module.exports.webhookQueue = webhookQueue;
 
-// failedQueue.process(async (payload, done) => {
-//     syncSingleFacility(payload, done);
-// });
-// module.exports.failedQueue = failedQueue;
+
 
 
 
 const syncSingleFacility = async (payload, done) => {
     try {
         const id = payload.data.id;
-        console.log("started single facility sync"+ id)
+        console.log("started single facility sync: "+ id)
         const mfrService = new MFRService();
         const facility = await mfrService.getSingleMFRFacilty(id);
-
         const dhis2Service = new DHIS2Service();
-        const dhis2OrgUnit = await dhis2Service.getFacilitiesByMfrIds(id);
+        const dhis2OrgUnit = await dhis2Service.getFacilityByMfrId(id);
         const attributeId = process.env.DHIS2_ATTRIBUTE_ID;        
-         if (dhis2OrgUnit){
-             const dhis2LastUpdated = dhis2OrgUnit.attributeValues.find(attr => attr.attribute.id === attributeId).value;
-             if (dhis2LastUpdated === facility.meta.lastUpdated) {
-                        return done();
-                    }
-            await dhis2Service.saveFacilityToDataStore(facility.entry);
+         if (dhis2OrgUnit.length !== 0){
+        
+            await dhis2Service.saveFacilityToDataStore(facility);
             payload.log("Facility object mapping for DHIS2 "+ facility.name)
                
         }
         throw Error('Unable to find faclity in dhis2')
-        // const dhis2Objects = await mfrService.mFRtoDhis2ObjectConverter([facility]);
-        // if (dhis2Objects.length > 0) {
-        //     const dhis2ResponseData = await dhis2Service.sendOrgUnit(dhis2Objects, payload);
-        //     payload.log(`Facility sync to DHIS2: ${dhis2ResponseData.length}`);
-        //     payload.progress(60);
-        // }
-
-        // done();
     } catch (err) {
         done(err);
     }

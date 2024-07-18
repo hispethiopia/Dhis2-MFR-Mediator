@@ -31,7 +31,7 @@ class MFRService {
 
   
 
-  async  isPhcu(locationId) {
+  async isPhcu(locationId) {
     const options = {
       uri: `${process.env.MFR_HOST}Location/${locationId}`,
       json: true 
@@ -68,12 +68,32 @@ class MFRService {
   options.url = `${process.env.MFR_HOST}Location/${mfrid}`
   try{
     const response = await request(options)
-    return await JSON.parse(response.body)
+    const facility= JSON.parse(response.body)
+    const transformedFacility = {
+      resource: facility,
+      search: { mode: 'match' },
+      isParentPHCU: false 
+  };
+  const reportingHierarchyExtension = facility.extension.find(ext => ext.url === 'reportingHierarchyId');
+        if (reportingHierarchyExtension && typeof reportingHierarchyExtension.valueString === 'string') {
+            const hierarchyParts = reportingHierarchyExtension.valueString.split('/');
+            if (hierarchyParts.length > 1) {
+                const parentFacilityId = hierarchyParts[1];
+                const isPHCU =  await this.isPhcu(parentFacilityId);
+                transformedFacility.isParentPHCU = isPHCU;
+
+                if (isPHCU === true) {
+                    console.log(`Parent facility ${parentFacilityId} of facility ${facility.id} is a PHCU.`);
+                }
+            }
+        }
+
+        return transformedFacility;
   } catch (error){
     throw Error(error)
   }
  }
-  
+
 
 
   async getLatestUpdated(lastUpdated) {
