@@ -28,6 +28,30 @@
           "admin"
         ],
         "type": "http"
+      },
+      {
+        "name": "Webhook: MFR-DHIS2",
+        "urlPattern": "/webhook/:id",
+        "alerts": [],
+        "txRerunAcl": [],
+        "txViewFullAcl": [],
+        "txViewAcl": [],
+        "properties": [],
+        "matchContentTypes": [],
+        "routes": [
+          {
+            "name": "Fetch Route",
+            "host": "localhost",
+            "port": "4000",
+            "path": "/webhook/:id",
+            "primary": true,
+            "type": "http"
+          }
+        ],
+        "allow": [
+          "admin"
+        ],
+        "type": "http"
       }
       
     ],

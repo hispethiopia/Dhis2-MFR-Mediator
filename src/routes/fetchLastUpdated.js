@@ -147,7 +147,11 @@ router.use('/fetchHierarchy', function(req, res){
     res.send(utils.buildReturnObject(mediatorConfig.urn, 'Successful', 200, headers, JSON.stringify(responseBody), orchestrations, properties))
   })
 })
-
+router.get('/webhook/:id', (req, res) => {
+  startSyncWebhook(req.params.id).then(response => {
+    res.send(response);
+  })
+})
 
 router.use('/mediator', serverAdapter.getRouter())
 

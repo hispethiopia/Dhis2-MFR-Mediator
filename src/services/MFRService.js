@@ -64,7 +64,15 @@ class MFRService {
       return false;    }
   }
   
-
+ async getSingleMFRFacilty(mfrid){
+  options.url = `${process.env.MFR_HOST}Location/${mfrid}`
+  try{
+    const response = await request(options)
+    return await JSON.parse(response.body)
+  } catch (error){
+    throw Error(error)
+  }
+ }
   
 
 

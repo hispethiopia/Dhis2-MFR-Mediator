@@ -1,5 +1,5 @@
 
-const {latestUpdatedQueue} = require('./QueueService')
+const {latestUpdatedQueue,webhookQueue} = require('./QueueService')
 
 const adress = process.env.ADRESS
 
@@ -11,4 +11,9 @@ module.exports.startSyncUpdated = async (lastDate) => {
 }
 
 
-
+module.exports.startSyncWebhook = async(id) => {
+    if (id){
+        job = await webhookQueue.add({id})
+        return `The job for webhook sync is started: ${adress}/mediator/queue/webhook/${job.id} and location id ${id}`        
+    }
+}

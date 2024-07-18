@@ -16,7 +16,7 @@ winston.add(winston.transports.Console, {
   colorize: true
 })
 
-winston.add(winston.transports.File, {filename: 'logs/hapi-fhir-mediator.log'})
+winston.add(winston.transports.File, {filename: 'logs/Dhis2-MFR-mediator.log'})
 
 // Config
 let config = {} // this will vary depending on whats set in openhim-core

@@ -136,10 +136,10 @@ DHIS2Service.prototype.getFacilitiesByMfrIds = async function (mfrIds) {
 };
 
 
-// webhookQueue.process(async (payload, done) => {
-//     syncSingleFacility(payload, done);
-// });
-// module.exports.webhookQueue = webhookQueue;
+webhookQueue.process(async (payload, done) => {
+    syncSingleFacility(payload, done);
+});
+module.exports.webhookQueue = webhookQueue;
 
 // failedQueue.process(async (payload, done) => {
 //     syncSingleFacility(payload, done);
@@ -148,31 +148,35 @@ DHIS2Service.prototype.getFacilitiesByMfrIds = async function (mfrIds) {
 
 
 
-// const syncSingleFacility = async (payload, done) => {
-//     try {
-//         const mfrId = payload.data.mfrId;
-//         const mfrService = new MFRService();
-//         const facility = await mfrService.getFacility(mfrId);
+const syncSingleFacility = async (payload, done) => {
+    try {
+        const id = payload.data.id;
+        console.log("started single facility sync"+ id)
+        const mfrService = new MFRService();
+        const facility = await mfrService.getSingleMFRFacilty(id);
 
-//         const dhis2Service = new DHIS2Service();
-//         const dhis2OrgUnit = await dhis2Service.getOrgUnitByAttributeValue(mfrId);
+        const dhis2Service = new DHIS2Service();
+        const dhis2OrgUnit = await dhis2Service.getFacilitiesByMfrIds(id);
+        const attributeId = process.env.DHIS2_ATTRIBUTE_ID;        
+         if (dhis2OrgUnit){
+             const dhis2LastUpdated = dhis2OrgUnit.attributeValues.find(attr => attr.attribute.id === attributeId).value;
+             if (dhis2LastUpdated === facility.meta.lastUpdated) {
+                        return done();
+                    }
+            await dhis2Service.saveFacilityToDataStore(facility.entry);
+            payload.log("Facility object mapping for DHIS2 "+ facility.name)
+               
+        }
+        throw Error('Unable to find faclity in dhis2')
+        // const dhis2Objects = await mfrService.mFRtoDhis2ObjectConverter([facility]);
+        // if (dhis2Objects.length > 0) {
+        //     const dhis2ResponseData = await dhis2Service.sendOrgUnit(dhis2Objects, payload);
+        //     payload.log(`Facility sync to DHIS2: ${dhis2ResponseData.length}`);
+        //     payload.progress(60);
+        // }
 
-//         if (dhis2OrgUnit) {
-//             const dhis2LastUpdated = dhis2OrgUnit.attributeValues.find(attr => attr.attribute.id === "Jc6iMhyGt6x").value;
-//             if (dhis2LastUpdated === facility.meta.lastUpdated) {
-//                 return done();
-//             }
-//         }
-
-//         const dhis2Objects = await mfrService.mFRtoDhis2ObjectConverter([facility]);
-//         if (dhis2Objects.length > 0) {
-//             const dhis2ResponseData = await dhis2Service.sendOrgUnit(dhis2Objects, payload);
-//             payload.log(`Facility sync to DHIS2: ${dhis2ResponseData.length}`);
-//             payload.progress(60);
-//         }
-
-//         done();
-//     } catch (err) {
-//         done(err);
-//     }
-// };
+        // done();
+    } catch (err) {
+        done(err);
+    }
+};
