@@ -4,3 +4,58 @@
 {"level":"info","message":"Running on 4000...","timestamp":"2024-07-19T08:48:38.344Z"}
 {"level":"info","message":"For the UI, open \"http://localhost:\"${PORT}/mediator","timestamp":"2024-07-19T08:48:38.344Z"}
 {"level":"info","message":"Make sure Redis is running on port 6379 by default","timestamp":"2024-07-19T08:48:38.344Z"}
+{"level":"info","message":"Received initial config:","timestamp":"2024-07-19T11:55:08.591Z"}
+{"level":"info","message":"{}","timestamp":"2024-07-19T11:55:08.592Z"}
+{"level":"info","message":"Successfully registered mediator!","timestamp":"2024-07-19T11:55:08.592Z"}
+{"level":"info","message":"Running on 4000...","timestamp":"2024-07-19T11:55:08.696Z"}
+{"level":"info","message":"For the UI, open \"http://localhost:\"${PORT}/mediator","timestamp":"2024-07-19T11:55:08.696Z"}
+{"level":"info","message":"Make sure Redis is running on port 6379 by default","timestamp":"2024-07-19T11:55:08.696Z"}
+{"level":"info","message":"Request initiated 2024-03-25T12:17:29.919+00:00","timestamp":"2024-07-19T11:55:18.053Z"}
+{"level":"info","message":"Sync response from last update The job for lastUpdated sync is started: \"http://localhost:\"${PORT}/mediator/queue/latestUpdated/292","timestamp":"2024-07-19T11:55:18.056Z"}
+{"level":"info","message":"2024-04-20T11:55:18.060Z","timestamp":"2024-07-19T11:55:18.060Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-20T11:55:18.060Z","timestamp":"2024-07-19T11:55:18.060Z"}
+{"level":"info","message":"Parent facility 71766e45-439c-418f-82ba-fe565a27413f of facility 8c19e22d-3434-414b-a97d-0d87e3a21c7a is a PHCU.","timestamp":"2024-07-19T11:55:24.602Z"}
+{"level":"info","message":"Facility with MFR ID 8c19e22d-3434-414b-a97d-0d87e3a21c7a created in the datastore.","timestamp":"2024-07-19T11:55:24.889Z"}
+{"level":"info","message":"Parent facility fcf6aa3f-00a5-42ae-99ae-29b1d568e862 of facility b970c709-78cd-4660-8153-de0ca1e67deb is a PHCU.","timestamp":"2024-07-19T11:55:25.248Z"}
+{"level":"info","message":"Facility with MFR ID b970c709-78cd-4660-8153-de0ca1e67deb created in the datastore.","timestamp":"2024-07-19T11:55:25.473Z"}
+{"level":"info","message":"Facility with MFR ID 868ac1c1-60bc-4fe3-9efe-f8c389703d15 created in the datastore.","timestamp":"2024-07-19T11:55:26.042Z"}
+{"level":"info","message":"Parent facility ad239d1d-df4f-40c6-8ec4-59fee829b277 of facility b1fd89e9-6bc1-47d7-956f-5d0585bffd92 is a PHCU.","timestamp":"2024-07-19T11:55:26.598Z"}
+{"level":"info","message":"Facility with MFR ID b1fd89e9-6bc1-47d7-956f-5d0585bffd92 created in the datastore.","timestamp":"2024-07-19T11:55:26.818Z"}
+{"level":"info","message":"Parent facility 5f35d092-c0d6-4fc8-b7da-8b4cbd4f3e41 of facility 943e2f12-b281-4efb-9655-a257052cff34 is a PHCU.","timestamp":"2024-07-19T11:55:27.415Z"}
+{"level":"info","message":"Facility with MFR ID 943e2f12-b281-4efb-9655-a257052cff34 created in the datastore.","timestamp":"2024-07-19T11:55:27.905Z"}
+{"level":"info","message":"Parent facility 71766e45-439c-418f-82ba-fe565a27413f of facility eb6a86af-57cf-4add-868b-a27ff0b70b70 is a PHCU.","timestamp":"2024-07-19T11:55:28.336Z"}
+{"level":"info","message":"Facility with MFR ID eb6a86af-57cf-4add-868b-a27ff0b70b70 created in the datastore.","timestamp":"2024-07-19T11:55:29.020Z"}
+{"level":"info","message":"Parent facility 27f2101c-9ac4-4f19-9abd-2e17130acc31 of facility d889a15b-b435-44d1-ba68-594fddd36bc8 is a PHCU.","timestamp":"2024-07-19T11:55:29.564Z"}
+{"level":"info","message":"Facility with MFR ID d889a15b-b435-44d1-ba68-594fddd36bc8 created in the datastore.","timestamp":"2024-07-19T11:55:29.766Z"}
+{"level":"info","message":"Parent facility 9cf31822-7cdc-48d8-9c42-ad996bdb68d6 of facility 5adfb7b7-a9ab-43bc-a9fc-79acc002abbd is a PHCU.","timestamp":"2024-07-19T11:55:30.386Z"}
+{"level":"info","message":"Facility with MFR ID 5adfb7b7-a9ab-43bc-a9fc-79acc002abbd created in the datastore.","timestamp":"2024-07-19T11:55:30.588Z"}
+{"level":"info","message":"Parent facility 27f2101c-9ac4-4f19-9abd-2e17130acc31 of facility 00da7076-6541-4d03-b472-c4fd46a4e3fb is a PHCU.","timestamp":"2024-07-19T11:55:31.151Z"}
+{"level":"info","message":"Facility with MFR ID 00da7076-6541-4d03-b472-c4fd46a4e3fb created in the datastore.","timestamp":"2024-07-19T11:55:31.590Z"}
+{"level":"info","message":"Parent facility 61ea3d55-ce53-4351-83b5-26cb6c33d0f0 of facility 910f6c00-1026-42d4-8757-bc556a0f9c73 is a PHCU.","timestamp":"2024-07-19T11:55:32.124Z"}
+{"level":"info","message":"Facility with MFR ID 910f6c00-1026-42d4-8757-bc556a0f9c73 created in the datastore.","timestamp":"2024-07-19T11:55:32.322Z"}
+{"level":"info","message":"Facility with MFR ID 18bfae0c-51e5-4f5f-9dce-991e9c943831 created in the datastore.","timestamp":"2024-07-19T11:55:32.498Z"}
+{"level":"info","message":"Facility with MFR ID 5c7fcd76-1215-43ee-8e3a-5165f92be797 created in the datastore.","timestamp":"2024-07-19T11:55:33.217Z"}
+{"level":"info","message":"Facility with MFR ID a586567a-e976-4d8f-8738-b6d90008d320 created in the datastore.","timestamp":"2024-07-19T11:55:33.395Z"}
+{"level":"info","message":"Facility with MFR ID 14cb9439-81b5-45e8-8dd9-1983dfe68fdb created in the datastore.","timestamp":"2024-07-19T11:55:33.576Z"}
+{"level":"info","message":"Parent facility 3ff997b1-ba18-4a58-b9f7-cf0333eb8459 of facility aca49483-871c-4c39-952b-d7c1884820e1 is a PHCU.","timestamp":"2024-07-19T11:55:34.176Z"}
+{"level":"info","message":"Facility with MFR ID aca49483-871c-4c39-952b-d7c1884820e1 created in the datastore.","timestamp":"2024-07-19T11:55:34.363Z"}
+{"level":"info","message":"Facility with MFR ID 7f20fd4c-c886-42e7-85ae-67f99c12febd created in the datastore.","timestamp":"2024-07-19T11:55:34.544Z"}
+{"level":"info","message":"Parent facility b51dfe4c-8e71-4af4-b290-3b091a1572e1 of facility d2e13c2b-65a1-4359-b8c7-d0d0109bd73e is a PHCU.","timestamp":"2024-07-19T11:55:35.094Z"}
+{"level":"info","message":"Facility with MFR ID d2e13c2b-65a1-4359-b8c7-d0d0109bd73e created in the datastore.","timestamp":"2024-07-19T11:55:35.379Z"}
+{"level":"info","message":"Parent facility 166dd282-001a-47a1-bf3e-2021fc4570f5 of facility ae0bf30f-44e1-42d1-b5aa-2439431db212 is a PHCU.","timestamp":"2024-07-19T11:55:35.753Z"}
+{"level":"info","message":"Facility with MFR ID ae0bf30f-44e1-42d1-b5aa-2439431db212 created in the datastore.","timestamp":"2024-07-19T11:55:35.947Z"}
+{"level":"info","message":"Parent facility d2481868-8f2b-4d87-bf32-878986a2e09b of facility 189c9342-a85f-4507-899a-ae24a74c8780 is a PHCU.","timestamp":"2024-07-19T11:55:36.306Z"}
+{"level":"info","message":"Facility with MFR ID 189c9342-a85f-4507-899a-ae24a74c8780 created in the datastore.","timestamp":"2024-07-19T11:55:36.492Z"}
+{"level":"info","message":"Parent facility 149c0eff-ded3-4f4d-ac07-5fe37942dca3 of facility cedf8b7d-27c1-4c40-a15e-b09c7737ceff is a PHCU.","timestamp":"2024-07-19T11:55:37.039Z"}
+{"level":"info","message":"Facility with MFR ID cedf8b7d-27c1-4c40-a15e-b09c7737ceff created in the datastore.","timestamp":"2024-07-19T11:55:37.222Z"}
+{"level":"info","message":"Parent facility d2481868-8f2b-4d87-bf32-878986a2e09b of facility 8a1dbb8d-217c-4bb4-a933-582267a440b2 is a PHCU.","timestamp":"2024-07-19T11:55:37.757Z"}
+{"level":"info","message":"Facility with MFR ID 8a1dbb8d-217c-4bb4-a933-582267a440b2 created in the datastore.","timestamp":"2024-07-19T11:55:37.949Z"}
+{"level":"info","message":"Parent facility fcf6aa3f-00a5-42ae-99ae-29b1d568e862 of facility cdb8f603-bfe0-4418-94e1-e6c07cf34b7d is a PHCU.","timestamp":"2024-07-19T11:55:38.575Z"}
+{"level":"info","message":"Facility with MFR ID cdb8f603-bfe0-4418-94e1-e6c07cf34b7d created in the datastore.","timestamp":"2024-07-19T11:55:38.775Z"}
+{"level":"info","message":"Facility with MFR ID a2401de2-7445-43d5-9928-f3271777260d created in the datastore.","timestamp":"2024-07-19T11:55:38.965Z"}
+{"level":"info","message":"Facility with MFR ID 8cfdecfb-7301-421c-81d0-c48150cece04 created in the datastore.","timestamp":"2024-07-19T11:55:39.157Z"}
+{"level":"info","message":"Facility with MFR ID d4bf95c7-45ab-4902-bce2-6e494f995c74 created in the datastore.","timestamp":"2024-07-19T11:55:39.977Z"}
+{"level":"info","message":"Facility with MFR ID f40043da-3443-4a02-9b31-f9374ac35ce0 created in the datastore.","timestamp":"2024-07-19T11:55:40.804Z"}
+{"level":"info","message":"Facility with MFR ID bce2b4a8-a633-48e6-ad26-c700b46864cc created in the datastore.","timestamp":"2024-07-19T11:55:41.463Z"}
+{"level":"info","message":"Facility with MFR ID c0134838-16fe-4513-be49-bd56713c2896 created in the datastore.","timestamp":"2024-07-19T11:55:42.180Z"}
+{"level":"info","message":"Facility with MFR ID 26af24f0-616c-4bbd-bfea-960ffda34b2e created in the datastore.","timestamp":"2024-07-19T11:55:43.038Z"}
