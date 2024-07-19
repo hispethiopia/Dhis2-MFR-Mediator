@@ -1,0 +1,6 @@
+{"level":"info","message":"Received initial config:","timestamp":"2024-07-19T08:48:38.086Z"}
+{"level":"info","message":"{}","timestamp":"2024-07-19T08:48:38.086Z"}
+{"level":"info","message":"Successfully registered mediator!","timestamp":"2024-07-19T08:48:38.086Z"}
+{"level":"info","message":"Running on 4000...","timestamp":"2024-07-19T08:48:38.344Z"}
+{"level":"info","message":"For the UI, open \"http://localhost:\"${PORT}/mediator","timestamp":"2024-07-19T08:48:38.344Z"}
+{"level":"info","message":"Make sure Redis is running on port 6379 by default","timestamp":"2024-07-19T08:48:38.344Z"}

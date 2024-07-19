@@ -35,7 +35,7 @@ latestUpdatedQueue.process(async (payload, done) => {
             payload.progress(20);
 
             const mfrService = new MFRService();
-            console.log(lastUpdate);
+            winston.info(lastUpdate);
             const mfrResponseData = await mfrService.getLatestUpdated(lastUpdate);
 
             if (mfrResponseData && mfrResponseData.entry && mfrResponseData.entry.length > 0) {
@@ -66,17 +66,17 @@ latestUpdatedQueue.process(async (payload, done) => {
                             entry.isParentPHCU = isPHCU;
 
                             if (isPHCU === true) {
-                                console.log(`Parent facility ${parentFacilityId} of facility ${mfrFacility.id} is a PHCU.`);
+                                winston.info(`Parent facility ${parentFacilityId} of facility ${mfrFacility.id} is a PHCU.`);
                             } 
                         }
                     }
 
                     if (dhis2Facility && (new Date(mfrFacility.meta.lastUpdated)).getTime() === (new Date(attributeJhrOESQAVor.value)).getTime()) {
-                        console.log(`MFR lastUpdated (${mfrLastUpdated}) is equal to DHIS2 lastUpdated (${dhis2LastUpdated}) for facility ${mfrFacility.id}`);
+                        winston.info(`MFR lastUpdated (${mfrLastUpdated}) is equal to DHIS2 lastUpdated (${dhis2LastUpdated}) for facility ${mfrFacility.id}`);
                         continue
                     }
 
-                    // console.log(`${dhis2Facility? "Updating":"Creating"} Facility with id ${entry.resource.id}`);
+                    // winston.info(`${dhis2Facility? "Updating":"Creating"} Facility with id ${entry.resource.id}`);
                     await dhis2Service.saveFacilityToDataStore(entry);
                 }
 
@@ -166,7 +166,7 @@ module.exports.webhookQueue = webhookQueue;
 const syncSingleFacility = async (payload, done) => {
     try {
         const id = payload.data.id;
-        console.log("started single facility sync: "+ id)
+        winston.info("started single facility sync: "+ id)
         const mfrService = new MFRService();
         const facility = await mfrService.getSingleMFRFacilty(id);
         const dhis2Service = new DHIS2Service();
@@ -175,10 +175,10 @@ const syncSingleFacility = async (payload, done) => {
          if (dhis2OrgUnit.length !== 0){
         
             await dhis2Service.saveFacilityToDataStore(facility);
-            payload.log("Facility object mapping for DHIS2 "+ facility.name)
+            winston.info("Facility object mapping for DHIS2 "+ facility.name)
                
         }
-        throw Error('Unable to find faclity in dhis2')
+        throw winston.Error('Unable to find faclity in dhis2')
     } catch (err) {
         done(err);
     }

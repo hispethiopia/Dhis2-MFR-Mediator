@@ -23,7 +23,7 @@ const options = {
 class DHIS2Service {
   sendSingleOrgUnit = async (dhis2Object, updateIfExist = false) => {
     winston.info('Processing DHIS2 Object', { name: dhis2Object.name, reportsTo: dhis2Object.reportsTo.name });
-    console.log(dhis2Object.name)
+    winston.info(dhis2Object.name)
     let locationOrg = await this._getDHIS2OrgUnit(dhis2Object.dhisId);
 
     if (!locationOrg) {
@@ -115,7 +115,7 @@ saveFacilityToDataStore = async function (mfrFacility) {
     try {
       
       if (dataStoreValue && dataStoreValue.data["resource.meta.lastUpdated"] === mfrFacility.resource.meta.lastUpdated) {
-        console.log(`Facility with MFR ID ${mfrFacility.resource.id} already exists in the datastore. No update needed`);
+        winston.info(`Facility with MFR ID ${mfrFacility.resource.id} already exists in the datastore. No update needed`);
       } else if (dataStoreValue) {
         await axios.put(`${process.env.DHIS2_HOST}/dataStore/Dhis2-MFRApproval/${mfrFacility.resource.id}`, remappedFacility, {
           auth: {
@@ -123,7 +123,7 @@ saveFacilityToDataStore = async function (mfrFacility) {
             password: process.env.DHIS2_PASSWORD
           }
         });
-        console.log(`Facility with MFR ID ${mfrFacility.resource.id} updated in the datastore.`);
+        winston.info(`Facility with MFR ID ${mfrFacility.resource.id} updated in the datastore.`);
       } else {
         await axios.post(`${process.env.DHIS2_HOST}/dataStore/Dhis2-MFRApproval/${mfrFacility.resource.id}`, remappedFacility, {
           auth: {
@@ -131,7 +131,7 @@ saveFacilityToDataStore = async function (mfrFacility) {
             password: process.env.DHIS2_PASSWORD
           }
         });
-        console.log(`Facility with MFR ID ${mfrFacility.resource.id} created in the datastore.`);
+        winston.info(`Facility with MFR ID ${mfrFacility.resource.id} created in the datastore.`);
       }
     } catch (error) {
       winston.error(`Error saving facility ${mfrFacility.resource.id} to datastore: ${error.message}`);
