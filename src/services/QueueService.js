@@ -50,7 +50,7 @@ latestUpdatedQueue.process(async (payload, done) => {
                     //Checks if there is a DHIS2 facility
                     const attributeId = process.env.DHIS2_ATTRIBUTE_ID;
                     const dhis2Facility = dhis2Facilities.find(facility =>
-                        facility.attributeValues.some(attr =>
+                        facility.attributeValues && facility.attributeValues.some(attr =>
                             attr.attribute.id === attributeId && attr.value === mfrFacility.id
                         )
                     );
@@ -179,7 +179,7 @@ const syncSingleFacility = async (payload, done) => {
             winston.info("Facility object mapping for DHIS2 " + facility.name)
 
         }
-        throw winston.Error('Unable to find faclity in dhis2')
+        throw winston.error('Unable to find faclity in dhis2')
     } catch (err) {
         done(err);
     }

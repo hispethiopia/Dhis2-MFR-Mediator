@@ -302,3 +302,33 @@
 {"level":"info","message":"Sync response from last update The job for lastUpdated sync is started: \"http://localhost:\"${PORT}/mediator/queue/latestUpdated/308","timestamp":"2024-07-19T13:05:57.854Z"}
 {"level":"info","message":"2024-04-20T13:05:57.867Z","timestamp":"2024-07-19T13:05:57.869Z"}
 {"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-20T13:05:57.867Z","timestamp":"2024-07-19T13:05:57.870Z"}
+{"level":"info","message":"Received initial config:","timestamp":"2024-07-22T06:33:43.712Z"}
+{"level":"info","message":"{}","timestamp":"2024-07-22T06:33:43.712Z"}
+{"level":"info","message":"Successfully registered mediator!","timestamp":"2024-07-22T06:33:43.712Z"}
+{"level":"info","message":"Running on 4000...","timestamp":"2024-07-22T06:33:43.838Z"}
+{"level":"info","message":"For the UI, open \"http://localhost:\"${PORT}/mediator","timestamp":"2024-07-22T06:33:43.838Z"}
+{"level":"info","message":"Make sure Redis is running on port 6379 by default","timestamp":"2024-07-22T06:33:43.838Z"}
+{"level":"info","message":"Request initiated 2024-03-25T12:17:29.919+00:00","timestamp":"2024-07-22T06:33:49.854Z"}
+{"level":"info","message":"Sync response from last update The job for lastUpdated sync is started: \"http://localhost:\"${PORT}/mediator/queue/latestUpdated/315","timestamp":"2024-07-22T06:33:49.855Z"}
+{"level":"info","message":"2024-04-23T06:33:49.856Z","timestamp":"2024-07-22T06:33:49.856Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-23T06:33:49.856Z","timestamp":"2024-07-22T06:33:49.857Z"}
+{"level":"info","message":"Received initial config:","timestamp":"2024-07-22T06:37:03.139Z"}
+{"level":"info","message":"{}","timestamp":"2024-07-22T06:37:03.139Z"}
+{"level":"info","message":"Successfully registered mediator!","timestamp":"2024-07-22T06:37:03.139Z"}
+{"level":"info","message":"Running on 4000...","timestamp":"2024-07-22T06:37:03.256Z"}
+{"level":"info","message":"For the UI, open \"http://localhost:\"${PORT}/mediator","timestamp":"2024-07-22T06:37:03.256Z"}
+{"level":"info","message":"Make sure Redis is running on port 6379 by default","timestamp":"2024-07-22T06:37:03.256Z"}
+{"level":"info","message":"Request initiated 2024-03-25T12:17:29.919+00:00","timestamp":"2024-07-22T06:37:06.094Z"}
+{"level":"info","message":"Sync response from last update The job for lastUpdated sync is started: \"http://localhost:\"${PORT}/mediator/queue/latestUpdated/316","timestamp":"2024-07-22T06:37:06.096Z"}
+{"level":"info","message":"2024-04-23T06:37:06.098Z","timestamp":"2024-07-22T06:37:06.098Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-23T06:37:06.098Z","timestamp":"2024-07-22T06:37:06.098Z"}
+{"level":"info","message":"Facility with MFR ID a6f1f93a-bb54-480a-bdd9-d875d5a11456 created in the datastore.","timestamp":"2024-07-22T06:37:09.464Z"}
+{"level":"info","message":"Facility with MFR ID 89d6d53c-e2be-4e2a-8189-6c474e99750a created in the datastore.","timestamp":"2024-07-22T06:37:10.255Z"}
+{"level":"info","message":"Facility with MFR ID 650bb7de-05fc-4bc9-acaf-0942273e54b8 created in the datastore.","timestamp":"2024-07-22T06:37:10.437Z"}
+{"level":"info","message":"Facility with MFR ID d28a9684-8ae6-4d4c-8bbc-ef7ccd7d7566 created in the datastore.","timestamp":"2024-07-22T06:37:10.613Z"}
+{"level":"info","message":"Facility with MFR ID e190d17a-176d-4c30-a16e-978a9c075587 created in the datastore.","timestamp":"2024-07-22T06:37:10.793Z"}
+{"level":"info","message":"Parent facility 2b3755f7-10e3-4544-9278-2cf5644dc6b5 of facility 4c8b306a-e5d8-4ccc-8fca-ade64887b5c7 is a PHCU.","timestamp":"2024-07-22T06:37:11.392Z"}
+{"level":"info","message":"Facility with MFR ID 4c8b306a-e5d8-4ccc-8fca-ade64887b5c7 created in the datastore.","timestamp":"2024-07-22T06:37:11.642Z"}
+{"level":"info","message":"Facility with MFR ID cec058aa-a7b4-4b6e-82db-8df75477083a created in the datastore.","timestamp":"2024-07-22T06:37:12.632Z"}
+{"level":"info","message":"Facility with MFR ID 0fc339f9-9c99-40ee-8920-b81c03da6e29 created in the datastore.","timestamp":"2024-07-22T06:37:13.423Z"}
+{"level":"info","message":"Facility with MFR ID 100750ff-909e-4b6b-9b37-8ea0075c33cd created in the datastore.","timestamp":"2024-07-22T06:37:14.238Z"}
