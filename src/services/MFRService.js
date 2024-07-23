@@ -51,13 +51,13 @@ class MFRService {
           if (primaryHealthCareUnit && typeof primaryHealthCareUnit.valueBoolean !== 'undefined') {
             return primaryHealthCareUnit.valueBoolean;
           } else {
-            throw new Error('isPrimaryHealthCareUnit not found in FacilityInformation extensions');
+            throw Error('isPrimaryHealthCareUnit not found in FacilityInformation extensions');
           }
         } else {
-          throw new Error('FacilityInformation not found in extensions or it has no sub-extensions');
+          throw Error('FacilityInformation not found in extensions or it has no sub-extensions');
         }
       } else {
-        throw new Error('Extensions array not found in the response');
+        throw Error('Extensions array not found in the response');
       }
     } catch (error) {
       console.error(`Error fetching primary health care unit information: ${error.message}`);

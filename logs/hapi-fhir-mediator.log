@@ -332,3 +332,86 @@
 {"level":"info","message":"Facility with MFR ID cec058aa-a7b4-4b6e-82db-8df75477083a created in the datastore.","timestamp":"2024-07-22T06:37:12.632Z"}
 {"level":"info","message":"Facility with MFR ID 0fc339f9-9c99-40ee-8920-b81c03da6e29 created in the datastore.","timestamp":"2024-07-22T06:37:13.423Z"}
 {"level":"info","message":"Facility with MFR ID 100750ff-909e-4b6b-9b37-8ea0075c33cd created in the datastore.","timestamp":"2024-07-22T06:37:14.238Z"}
+{"level":"info","message":"Received initial config:","timestamp":"2024-07-23T06:31:01.112Z"}
+{"level":"info","message":"{}","timestamp":"2024-07-23T06:31:01.113Z"}
+{"level":"info","message":"Successfully registered mediator!","timestamp":"2024-07-23T06:31:01.113Z"}
+{"level":"info","message":"Running on 4000...","timestamp":"2024-07-23T06:31:01.216Z"}
+{"level":"info","message":"For the UI, open \"http://localhost:\"${PORT}/mediator","timestamp":"2024-07-23T06:31:01.216Z"}
+{"level":"info","message":"Make sure Redis is running on port 6379 by default","timestamp":"2024-07-23T06:31:01.217Z"}
+{"level":"info","message":"2024-04-24T06:31:01.257Z","timestamp":"2024-07-23T06:31:01.258Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-24T06:31:01.257Z","timestamp":"2024-07-23T06:31:01.258Z"}
+{"level":"info","message":"Received initial config:","timestamp":"2024-07-23T06:31:47.962Z"}
+{"level":"info","message":"{}","timestamp":"2024-07-23T06:31:47.962Z"}
+{"level":"info","message":"Successfully registered mediator!","timestamp":"2024-07-23T06:31:47.963Z"}
+{"level":"info","message":"Running on 4000...","timestamp":"2024-07-23T06:31:48.070Z"}
+{"level":"info","message":"For the UI, open \"http://localhost:\"${PORT}/mediator","timestamp":"2024-07-23T06:31:48.070Z"}
+{"level":"info","message":"Make sure Redis is running on port 6379 by default","timestamp":"2024-07-23T06:31:48.070Z"}
+{"level":"info","message":"Request initiated 2024-03-25T12:17:29.919+00:00","timestamp":"2024-07-23T06:31:51.785Z"}
+{"level":"info","message":"Sync response from last update The job for lastUpdated sync is started: \"http://localhost:\"${PORT}/mediator/queue/latestUpdated/323","timestamp":"2024-07-23T06:31:51.787Z"}
+{"level":"info","message":"2024-04-24T06:31:51.789Z","timestamp":"2024-07-23T06:31:51.790Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-24T06:31:51.789Z","timestamp":"2024-07-23T06:31:51.790Z"}
+{"level":"info","message":"Received initial config:","timestamp":"2024-07-23T06:36:21.937Z"}
+{"level":"info","message":"{}","timestamp":"2024-07-23T06:36:21.937Z"}
+{"level":"info","message":"Successfully registered mediator!","timestamp":"2024-07-23T06:36:21.937Z"}
+{"level":"info","message":"Running on 4000...","timestamp":"2024-07-23T06:36:22.036Z"}
+{"level":"info","message":"For the UI, open \"http://localhost:\"${PORT}/mediator","timestamp":"2024-07-23T06:36:22.036Z"}
+{"level":"info","message":"Make sure Redis is running on port 6379 by default","timestamp":"2024-07-23T06:36:22.036Z"}
+{"level":"info","message":"Request initiated 2024-03-25T12:17:29.919+00:00","timestamp":"2024-07-23T06:36:25.016Z"}
+{"level":"info","message":"Sync response from last update The job for lastUpdated sync is started: \"http://localhost:\"${PORT}/mediator/queue/latestUpdated/324","timestamp":"2024-07-23T06:36:25.019Z"}
+{"level":"info","message":"2024-04-24T06:36:25.023Z","timestamp":"2024-07-23T06:36:25.024Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-24T06:36:25.023Z","timestamp":"2024-07-23T06:36:25.024Z"}
+{"level":"error","message":"Error fetching facilities from DHIS2: Request failed with status code 409","timestamp":"2024-07-23T06:36:30.333Z"}
+{"level":"info","message":"2024-04-24T06:36:52.083Z","timestamp":"2024-07-23T06:36:52.083Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-24T06:36:52.083Z","timestamp":"2024-07-23T06:36:52.084Z"}
+{"level":"error","message":"Error fetching facilities from DHIS2: Request failed with status code 409","timestamp":"2024-07-23T06:36:54.878Z"}
+{"level":"info","message":"Received initial config:","timestamp":"2024-07-23T06:39:30.848Z"}
+{"level":"info","message":"{}","timestamp":"2024-07-23T06:39:30.848Z"}
+{"level":"info","message":"Successfully registered mediator!","timestamp":"2024-07-23T06:39:30.848Z"}
+{"level":"info","message":"Running on 4000...","timestamp":"2024-07-23T06:39:30.936Z"}
+{"level":"info","message":"For the UI, open \"http://localhost:\"${PORT}/mediator","timestamp":"2024-07-23T06:39:30.936Z"}
+{"level":"info","message":"Make sure Redis is running on port 6379 by default","timestamp":"2024-07-23T06:39:30.936Z"}
+{"level":"info","message":"Request initiated 2024-03-25T12:17:29.919+00:00","timestamp":"2024-07-23T06:39:33.847Z"}
+{"level":"info","message":"Sync response from last update The job for lastUpdated sync is started: \"http://localhost:\"${PORT}/mediator/queue/latestUpdated/325","timestamp":"2024-07-23T06:39:33.850Z"}
+{"level":"info","message":"2024-04-24T06:39:33.855Z","timestamp":"2024-07-23T06:39:33.855Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-24T06:39:33.855Z","timestamp":"2024-07-23T06:39:33.855Z"}
+{"level":"error","message":"Error fetching facilities from DHIS2: Request failed with status code 409","timestamp":"2024-07-23T06:39:36.519Z"}
+{"level":"info","message":"Received initial config:","timestamp":"2024-07-23T06:42:36.106Z"}
+{"level":"info","message":"{}","timestamp":"2024-07-23T06:42:36.106Z"}
+{"level":"info","message":"Successfully registered mediator!","timestamp":"2024-07-23T06:42:36.106Z"}
+{"level":"info","message":"Running on 4000...","timestamp":"2024-07-23T06:42:36.184Z"}
+{"level":"info","message":"For the UI, open \"http://localhost:\"${PORT}/mediator","timestamp":"2024-07-23T06:42:36.184Z"}
+{"level":"info","message":"Make sure Redis is running on port 6379 by default","timestamp":"2024-07-23T06:42:36.184Z"}
+{"level":"info","message":"Request initiated 2024-03-25T12:17:29.919+00:00","timestamp":"2024-07-23T06:42:39.805Z"}
+{"level":"info","message":"Sync response from last update The job for lastUpdated sync is started: \"http://localhost:\"${PORT}/mediator/queue/latestUpdated/326","timestamp":"2024-07-23T06:42:39.809Z"}
+{"level":"info","message":"2024-04-24T06:42:39.811Z","timestamp":"2024-07-23T06:42:39.812Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-24T06:42:39.811Z","timestamp":"2024-07-23T06:42:39.812Z"}
+{"level":"error","message":"Error fetching facilities from DHIS2: 409 - ","timestamp":"2024-07-23T06:42:45.975Z"}
+{"level":"error","message":"Response data: {\"httpStatus\":\"Conflict\",\"httpStatusCode\":409,\"status\":\"ERROR\",\"message\":\"Invalid argument `[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,]` for in operator.\"}","timestamp":"2024-07-23T06:42:45.979Z"}
+{"level":"info","message":"Received initial config:","timestamp":"2024-07-23T06:44:38.741Z"}
+{"level":"info","message":"{}","timestamp":"2024-07-23T06:44:38.742Z"}
+{"level":"info","message":"Successfully registered mediator!","timestamp":"2024-07-23T06:44:38.742Z"}
+{"level":"info","message":"Running on 4000...","timestamp":"2024-07-23T06:44:38.822Z"}
+{"level":"info","message":"For the UI, open \"http://localhost:\"${PORT}/mediator","timestamp":"2024-07-23T06:44:38.822Z"}
+{"level":"info","message":"Make sure Redis is running on port 6379 by default","timestamp":"2024-07-23T06:44:38.822Z"}
+{"level":"info","message":"Request initiated 2024-03-25T12:17:29.919+00:00","timestamp":"2024-07-23T06:44:43.302Z"}
+{"level":"info","message":"Sync response from last update The job for lastUpdated sync is started: \"http://localhost:\"${PORT}/mediator/queue/latestUpdated/327","timestamp":"2024-07-23T06:44:43.305Z"}
+{"level":"info","message":"2024-04-24T06:44:43.309Z","timestamp":"2024-07-23T06:44:43.310Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-24T06:44:43.309Z","timestamp":"2024-07-23T06:44:43.310Z"}
+{"level":"info","message":"Received initial config:","timestamp":"2024-07-23T06:51:05.220Z"}
+{"level":"info","message":"{}","timestamp":"2024-07-23T06:51:05.220Z"}
+{"level":"info","message":"Successfully registered mediator!","timestamp":"2024-07-23T06:51:05.220Z"}
+{"level":"info","message":"Running on 4000...","timestamp":"2024-07-23T06:51:05.327Z"}
+{"level":"info","message":"For the UI, open \"http://localhost:\"${PORT}/mediator","timestamp":"2024-07-23T06:51:05.327Z"}
+{"level":"info","message":"Make sure Redis is running on port 6379 by default","timestamp":"2024-07-23T06:51:05.327Z"}
+{"level":"info","message":"Request initiated 2024-03-25T12:17:29.919+00:00","timestamp":"2024-07-23T06:51:09.818Z"}
+{"level":"info","message":"Sync response from last update The job for lastUpdated sync is started: \"http://localhost:\"${PORT}/mediator/queue/latestUpdated/328","timestamp":"2024-07-23T06:51:09.822Z"}
+{"level":"info","message":"2024-04-24T06:51:09.829Z","timestamp":"2024-07-23T06:51:09.830Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-24T06:51:09.829Z","timestamp":"2024-07-23T06:51:09.830Z"}
+{"level":"info","message":"2024-04-25T11:37:15.408+00:00","timestamp":"2024-07-23T06:52:07.760Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-25T11:37:15.408+00:00","timestamp":"2024-07-23T06:52:07.760Z"}
+{"level":"info","message":"2024-04-26T12:46:44.486+00:00","timestamp":"2024-07-23T06:52:59.381Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-26T12:46:44.486+00:00","timestamp":"2024-07-23T06:52:59.382Z"}
+{"level":"info","message":"2024-04-29T16:06:26.850+00:00","timestamp":"2024-07-23T06:53:59.459Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-29T16:06:26.850+00:00","timestamp":"2024-07-23T06:53:59.459Z"}
+{"level":"info","message":"2024-04-30T15:27:32.344+00:00","timestamp":"2024-07-23T06:55:04.202Z"}
+{"level":"info","message":"Getting updated list of facilities from MFR since  2024-04-30T15:27:32.344+00:00","timestamp":"2024-07-23T06:55:04.202Z"}

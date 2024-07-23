@@ -92,12 +92,62 @@ class DHIS2Service {
     return responseBody;
   };
 
+
+getFacilitiesByMfrIds = async function (mfrIds) {
+  try {
+      const filters = [
+          `attributeValues.attribute.id:eq:${process.env.DHIS2_ATTRIBUTE_ID}`,
+          `attributeValues.value:in:[${mfrIds.join(',')}]`
+      ];
+
+      const queryParams = filters.map(filter => `filter=${encodeURIComponent(filter)}`).join('&');
+      const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits?fields=name,id,attributeValues,lastUpdated&${queryParams}`;
+      
+
+      const response = await axios.get(dhisUrl, {
+          headers: {
+              'Authorization': `Basic ${Buffer.from(`${process.env.DHIS2_USER}:${process.env.DHIS2_PASSWORD}`).toString('base64')}`
+          }
+      });
+
+      return response.data.organisationUnits;
+  } catch (error) {
+      console.log(error);
+      winston.error(`Error fetching facilities from DHIS2: ${error.message}`);
+      throw error;
+  }
+};
+
  
 
 
 
+getFacilityByMfrId = async function (mfrId) {
+  try {
+      const filters = [
+          `attributeValues.attribute.id:eq:${process.env.DHIS2_ATTRIBUTE_ID}`,
+          `attributeValues.value:eq:${mfrId}`
+      ];
 
-saveFacilityToDataStore = async function (mfrFacility) {
+      const queryParams = filters.map(filter => `filter=${encodeURIComponent(filter)}`).join('&');
+      const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits?fields=name,id,attributeValues,lastUpdated&${queryParams}`;
+      
+
+      const response = await axios.get(dhisUrl, {
+          headers: {
+              'Authorization': `Basic ${Buffer.from(`${process.env.DHIS2_USER}:${process.env.DHIS2_PASSWORD}`).toString('base64')}`
+          }
+      });
+
+      return response.data.organisationUnits;
+  } catch (error) {
+      winston.error(`Error fetching facility from DHIS2: ${error.message}`);
+      throw error;
+  }
+};
+
+
+saveFacilityToDataStore = async function (mfrFacility,payload) {
     let dataStoreValue = null;
     try {
       dataStoreValue = await axios.get(`${process.env.DHIS2_HOST}/dataStore/Dhis2-MFRApproval/${mfrFacility.resource.id}`, {
@@ -115,7 +165,7 @@ saveFacilityToDataStore = async function (mfrFacility) {
     try {
       
       if (dataStoreValue && dataStoreValue.data["resource.meta.lastUpdated"] === mfrFacility.resource.meta.lastUpdated) {
-        winston.info(`Facility with MFR ID ${mfrFacility.resource.id} already exists in the datastore. No update needed`);
+        payload.log(`Facility with MFR ID ${mfrFacility.resource.id} already exists in the datastore. No update needed`)
       } else if (dataStoreValue) {
         await axios.put(`${process.env.DHIS2_HOST}/dataStore/Dhis2-MFRApproval/${mfrFacility.resource.id}`, remappedFacility, {
           auth: {
@@ -123,7 +173,7 @@ saveFacilityToDataStore = async function (mfrFacility) {
             password: process.env.DHIS2_PASSWORD
           }
         });
-        winston.info(`Facility with MFR ID ${mfrFacility.resource.id} updated in the datastore.`);
+        payload.log(`Facility with MFR ID ${mfrFacility.resource.id} updated in the datastore.`)
       } else {
         await axios.post(`${process.env.DHIS2_HOST}/dataStore/Dhis2-MFRApproval/${mfrFacility.resource.id}`, remappedFacility, {
           auth: {
@@ -131,10 +181,10 @@ saveFacilityToDataStore = async function (mfrFacility) {
             password: process.env.DHIS2_PASSWORD
           }
         });
-        winston.info(`Facility with MFR ID ${mfrFacility.resource.id} created in the datastore.`);
+        payload.log(`Facility with MFR ID ${mfrFacility.resource.id} created in the datastore.`);
       }
     } catch (error) {
-      winston.error(`Error saving facility ${mfrFacility.resource.id} to datastore: ${error.message}`);
+      payload.log(`Error saving facility ${mfrFacility.resource.id} to datastore: ${error.message}`);
     }
   };
 
