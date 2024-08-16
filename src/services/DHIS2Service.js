@@ -1,9 +1,10 @@
 require('dotenv').config();
 const request = require('requestretry');
 const winston = require('winston');
-const MFRService = require('./MFRService');
-const queue = require('./QueueService');
+const MFRService = require('./MFRService.js');
+const queue = require('./QueueService.js');
 const axios = require('axios');
+const axiosRetry = require('axios-retry');
 const { remapMfrToDhis } = require('../utils/utils');
 const options = {
   headers: {
@@ -20,10 +21,13 @@ const options = {
   retryStrategy: request.RetryStrategies.HTTPOrNetworkError,
 };
 
+
+
+
 class DHIS2Service {
   sendSingleOrgUnit = async (dhis2Object, updateIfExist = false) => {
     winston.info('Processing DHIS2 Object', { name: dhis2Object.name, reportsTo: dhis2Object.reportsTo.name });
-    console.log(dhis2Object.name)
+    winston.info(dhis2Object.name)
     let locationOrg = await this._getDHIS2OrgUnit(dhis2Object.dhisId);
 
     if (!locationOrg) {
@@ -92,12 +96,97 @@ class DHIS2Service {
     return responseBody;
   };
 
+
+getFacilitiesByMfrIds = async function (mfrIds) {
+  try {
+      const filters = [
+          `attributeValues.attribute.id:eq:${process.env.DHIS2_ATTRIBUTE_ID}`,
+          `attributeValues.value:in:[${mfrIds.join(',')}]`
+      ];
+
+      const queryParams = filters.map(filter => `filter=${encodeURIComponent(filter)}`).join('&');
+      const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits?fields=name,id,attributeValues,lastUpdated&${queryParams}`;
+      
+
+      const response = await axios.get(dhisUrl, {
+          headers: {
+              'Authorization': `Basic ${Buffer.from(`${process.env.DHIS2_USER}:${process.env.DHIS2_PASSWORD}`).toString('base64')}`
+          }
+      });
+
+      return response.data.organisationUnits;
+  } catch (error) {
+      console.log(error);
+      winston.error(`Error fetching facilities from DHIS2: ${error.message}`);
+      throw error;
+  }
+};
+
  
+getMfrLastUpdated = async function (mfrId) {
+  try {
+      const filters = [
+          `attributeValues.attribute.id:eq:${process.env.DHIS2_ATTRIBUTE_ID}`,
+          `attributeValues.value:eq:${mfrId}`
+      ];
+
+      const queryParams = filters.map(filter => `filter=${encodeURIComponent(filter)}`).join('&');
+      const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits?fields=attributeValues&${queryParams}`;
+
+      const response = await axios.get(dhisUrl, {
+          headers: {
+              'Authorization': `Basic ${Buffer.from(`${process.env.DHIS2_USER}:${process.env.DHIS2_PASSWORD}`).toString('base64')}`
+          }
+      });
+
+      // Assuming there's only one organisationUnit in the response
+      const organisationUnit = response.data.organisationUnits[0];
+
+      if (organisationUnit) {
+        const attributeId = process.env.MFR_LastUpdated;
+          const attribute = organisationUnit.attributeValues.find(attr => attr.attribute.id === attributeId);
+          if (attribute) {
+              return attribute.value;
+          }
+      }
+
+      return null; // Return null if the attribute is not found
+
+  } catch (error) {
+      winston.error(`Error fetching facility from DHIS2: ${error.message}`);
+      throw error;
+  }
+}
 
 
 
+getFacilityByMfrId = async function (mfrId) {
+  try {
+      const filters = [
+          `attributeValues.attribute.id:eq:${process.env.DHIS2_ATTRIBUTE_ID}`,
+          `attributeValues.value:eq:${mfrId}`
+      ];
 
-saveFacilityToDataStore = async function (mfrFacility) {
+      const queryParams = filters.map(filter => `filter=${encodeURIComponent(filter)}`).join('&');
+      const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits?fields=name,id,attributeValues,lastUpdated&${queryParams}`;
+      
+
+      const response = await axios.get(dhisUrl, {
+          headers: {
+              'Authorization': `Basic ${Buffer.from(`${process.env.DHIS2_USER}:${process.env.DHIS2_PASSWORD}`).toString('base64')}`
+          }
+      });
+
+      return response.data.organisationUnits;
+  } catch (error) {
+      winston.error(`Error fetching facility from DHIS2: ${error.message}`);
+      throw error;
+  }
+};
+
+
+
+saveFacilityToDataStore = async function (mfrFacility,payload) {
     let dataStoreValue = null;
     try {
       dataStoreValue = await axios.get(`${process.env.DHIS2_HOST}/dataStore/Dhis2-MFRApproval/${mfrFacility.resource.id}`, {
@@ -115,7 +204,7 @@ saveFacilityToDataStore = async function (mfrFacility) {
     try {
       
       if (dataStoreValue && dataStoreValue.data["resource.meta.lastUpdated"] === mfrFacility.resource.meta.lastUpdated) {
-        console.log(`Facility with MFR ID ${mfrFacility.resource.id} already exists in the datastore. No update needed`);
+        payload.log(`Facility with MFR ID ${mfrFacility.resource.id} already exists in the datastore. No update needed`)
       } else if (dataStoreValue) {
         await axios.put(`${process.env.DHIS2_HOST}/dataStore/Dhis2-MFRApproval/${mfrFacility.resource.id}`, remappedFacility, {
           auth: {
@@ -123,7 +212,7 @@ saveFacilityToDataStore = async function (mfrFacility) {
             password: process.env.DHIS2_PASSWORD
           }
         });
-        console.log(`Facility with MFR ID ${mfrFacility.resource.id} updated in the datastore.`);
+        payload.log(`Facility with MFR ID ${mfrFacility.resource.id} updated in the datastore.`)
       } else {
         await axios.post(`${process.env.DHIS2_HOST}/dataStore/Dhis2-MFRApproval/${mfrFacility.resource.id}`, remappedFacility, {
           auth: {
@@ -131,13 +220,12 @@ saveFacilityToDataStore = async function (mfrFacility) {
             password: process.env.DHIS2_PASSWORD
           }
         });
-        console.log(`Facility with MFR ID ${mfrFacility.resource.id} created in the datastore.`);
+        payload.log(`Facility with MFR ID ${mfrFacility.resource.id} created in the datastore.`);
       }
     } catch (error) {
-      winston.error(`Error saving facility ${mfrFacility.resource.id} to datastore: ${error.message}`);
+      payload.log(`Error saving facility ${mfrFacility.resource.id} to datastore: ${error.message}`);
     }
   };
-
 
   
 
