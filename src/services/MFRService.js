@@ -83,7 +83,7 @@ class MFRService {
                 transformedFacility.isParentPHCU = isPHCU;
 
                 if (isPHCU === true) {
-                    console.log(`Parent facility ${parentFacilityId} of facility ${facility.id} is a PHCU.`);
+                    winston.info(`Parent facility ${parentFacilityId} of facility ${facility.id} is a PHCU.`);
                 }
             }
         }
@@ -96,140 +96,43 @@ class MFRService {
 
 
 
-  // async getLatestUpdated(lastUpdated,page) {
-  //   winston.info("Getting updated list of facilities from MFR since ", lastUpdated)
-  //   options.url = `${process.env.MFR_HOST}Location?_lastUpdated=gt${lastUpdated}&_count=100&_sort=_lastUpdated&_getpagesoffset=${page}`
+async  getAllData(lastUpdated) {
+  let nextUrl = `${process.env.MFR_HOST}Location?_lastUpdated=gt${lastUpdated}&_count=5000&_sort=_lastUpdated`;
+  const allEntries = [];  
 
-  //   try {
-  //     const response = await request(options)
-  //     return await JSON.parse(response.body)
-  //   } catch (error) {
-  //     throw Error(error)
-  //   }
-  // }
-//   async getLatestUpdated(lastUpdated) {
-//     winston.info("Getting updated list of facilities from MFR since ", lastUpdated);
-//     const accumulatedEntries = [];
-//     let nextUrl = `${process.env.MFR_HOST}Location?_lastUpdated=gt${lastUpdated}&_count=100&_sort=_lastUpdated`;
-
-//     try {
-//         const response =await axios.get(nextUrl);
-  
-//         while (nextUrl) {
-//             const response = await axios.get(nextUrl);
-//             const responseBody = response.data;
-            
-//             // console.log(responseBody.entry)
-//             // Accumulate entries from the current response
-            
-
-//             // Check if there is a "next" link to continue fetching
-//             const nextLink = responseBody.link && responseBody.link.find(link => link.relation === "next");
-//             nextUrl = nextLink ? nextLink.url : null;
-//             if (responseBody.entry && responseBody.entry.length > 0) {
-//               console.log(responseBody.entry) 
-//               // yield responseBody.entry
-//             }
-//         }   
-        
-       
-
-//         // Return the accumulated entries as part of a single bundle
-//         // return {
-//         //     resourceType: "Bundle",
-//         //     type: "searchset",
-//         //     entry: accumulatedEntries
-           
-//         //   };
-        
-//     } catch (error) {
-//         throw new Error(`Error fetching updated facilities: ${error.message}`);
-//     }
-// }
-// async getLatestUpdated(lastUpdated, processBatch) {
-//   winston.info("Getting updated list of facilities from MFR since ", lastUpdated);
-//   let nextUrl = `${process.env.MFR_HOST}Location?_lastUpdated=gt${lastUpdated}&_count=100&_sort=_lastUpdated`;
-
-//   try {
-//       while (nextUrl) {
-//           const response = await axios.get(nextUrl);
-//           const responseBody = response.data;
-
-//           // Process the current batch of entries
-//           if (responseBody.entry && responseBody.entry.length > 0) {
-//               await processBatch(responseBody.entry);
-//           }
-
-//           // Check if there is a "next" link to continue fetching
-//           const nextLink = responseBody.link && responseBody.link.find(link => link.relation === "next");
-//           nextUrl = nextLink ? nextLink.url : null;
-//       }
-//   } catch (error) {
-//       throw new Error(`Error fetching updated facilities: ${error.message}`);
-//   }
-// }
-
-// async getLatestUpdated(lastUpdated) {
-//   winston.info("Getting updated list of facilities from MFR since ", lastUpdated);
-//   const accumulatedEntries = [];
-//   let nextUrl = `${process.env.MFR_HOST}Location?_lastUpdated=gt${lastUpdated}&_count=100&_sort=_lastUpdated`;
-
-//   try {
-//       while (nextUrl) {
-//           const response = await axios.get(nextUrl);
-//           const responseBody = response.data;
-
-//           if (responseBody.entry && responseBody.entry.length > 0) {
-//               accumulatedEntries.push(...responseBody.entry);
-//           }
-
-//           const nextLink = responseBody.link && responseBody.link.find(link => link.relation === "next");
-//           nextUrl = nextLink ? nextLink.url : null;
-//       }
-
-//       return {
-//           resourceType: "Bundle",
-//           type: "searchset",
-//           entry: accumulatedEntries
-//       };
-//   } catch (error) {
-//       throw new Error(`Error fetching latest updated facilities: ${error.message}`);
-//   }
-// }
-
-async getLatestUpdated(lastUpdated, processBatch) {
-  winston.info("Getting updated list of facilities from MFR since ", lastUpdated);
-  let nextUrl = `${process.env.MFR_HOST}Location?_lastUpdated=gt${lastUpdated}&_count=100&_sort=_lastUpdated`;
-
-  
   try {
-      while (nextUrl) {
-          const response = await axios.get(nextUrl);
-          const responseBody = response.data;
+    while (nextUrl) {
+      winston.info("Fetching URL: ", nextUrl);
+      const response = await axios.get(nextUrl);
+      const responseBody = response.data;
 
-          if (responseBody.entry && responseBody.entry.length > 0) {
-             
-              await processBatch({
-                  resourceType: "Bundle",
-                  type: "searchset",
-                  entry: responseBody.entry
-              });
-          }
-
-          const nextLink = responseBody.link && responseBody.link.find(link => link.relation === "next");
-          nextUrl = nextLink ? nextLink.url : null;
-
-          if (!nextUrl) {
-              break;
-          }
+      if (responseBody.entry && responseBody.entry.length > 0) {
+        allEntries.push(...responseBody.entry);
       }
+
+      const nextLink = responseBody.link && responseBody.link.find(link => link.relation === "next");
+      nextUrl = nextLink ? nextLink.url : null;
+    }
   } catch (error) {
-      throw new Error(`Error fetching latest updated facilities: ${error.message}`);
+    throw new Error(`Error fetching data: ${error.message}`);
   }
+
+  return allEntries;  
 }
 
-
-
+async  getLatestUpdated(lastUpdated, processBatch) {
+  try {
+    const mfrService = new MFRService();
+    const allData = await mfrService.getAllData(lastUpdated); 
+    await processBatch({
+      resourceType: "Bundle",
+      type: "searchset",
+      entry: allData, 
+    });
+  } catch (error) {
+    throw new Error(`Error fetching and processing data: ${error.message}`);
+  }
+}
 
 }
 

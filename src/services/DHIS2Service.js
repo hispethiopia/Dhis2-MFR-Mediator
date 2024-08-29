@@ -6,6 +6,7 @@ const queue = require('./QueueService.js');
 const axios = require('axios');
 const axiosRetry = require('axios-retry');
 const { remapMfrToDhis } = require('../utils/utils');
+const { response } = require('express');
 const options = {
   headers: {
     'Content-Type': 'application/json',
@@ -105,7 +106,7 @@ getFacilitiesByMfrIds = async function (mfrIds) {
       ];
 
       const queryParams = filters.map(filter => `filter=${encodeURIComponent(filter)}`).join('&');
-      const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits?fields=name,id,attributeValues,lastUpdated&${queryParams}`;
+      const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits?fields=code,name,id,attributeValues,lastUpdated&${queryParams}`;
       
 
       const response = await axios.get(dhisUrl, {
@@ -116,11 +117,30 @@ getFacilitiesByMfrIds = async function (mfrIds) {
 
       return response.data.organisationUnits;
   } catch (error) {
-      console.log(error);
       winston.error(`Error fetching facilities from DHIS2: ${error.message}`);
       throw error;
   }
 };
+
+getMfrId = async function (dhisId){
+  try{
+    const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits/${dhisId}?fields=attributeValues`;
+    const response = await axios.get(dhisUrl, {
+      headers: {
+          'Authorization': `Basic ${Buffer.from(`${process.env.DHIS2_USER}:${process.env.DHIS2_PASSWORD}`).toString('base64')}`
+      }
+     
+  }); 
+  const mfrIdObject = response.data.attributeValues.find(
+    a => a.attribute.id === `${process.env.DHIS2_ATTRIBUTE_ID}`
+  );
+  const mfrId = mfrIdObject ? mfrIdObject.value : null;
+  return mfrId;
+  }catch (error) {
+      winston.error(`Error fetching Mfr id from DHIS2: ${error.message}`);
+      throw error;
+  }
+}
 
  
 getMfrLastUpdated = async function (mfrId) {
@@ -168,7 +188,7 @@ getFacilityByMfrId = async function (mfrId) {
       ];
 
       const queryParams = filters.map(filter => `filter=${encodeURIComponent(filter)}`).join('&');
-      const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits?fields=name,id,attributeValues,lastUpdated&${queryParams}`;
+      const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits?fields=geometry,code,name,shortName,openingDate,id,attributeValues,lastUpdated,parent&${queryParams}`;
       
 
       const response = await axios.get(dhisUrl, {
@@ -181,6 +201,27 @@ getFacilityByMfrId = async function (mfrId) {
   } catch (error) {
       winston.error(`Error fetching facility from DHIS2: ${error.message}`);
       throw error;
+  }
+};
+updateFacility = async function (dhisId, updatedFacility) {
+  try {
+    const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits/${dhisId}`;
+    
+    const response = await axios.put(dhisUrl, updatedFacility, {
+      headers: {
+        'Authorization': `Basic ${Buffer.from(`${process.env.DHIS2_USER}:${process.env.DHIS2_PASSWORD}`).toString('base64')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`Failed to update facility in DHIS2. Status: ${response.status}`);
+    }
+    console.log('Facility'+updatedFacility.name+ 'directly updated ')
+    return response.data; 
+  } catch (error) {
+    winston.error(`Error updating facility with ID ${dhisId} in DHIS2: ${error.message}`);
+    throw error;
   }
 };
 
@@ -203,7 +244,7 @@ saveFacilityToDataStore = async function (mfrFacility,payload) {
     
     try {
       
-      if (dataStoreValue && dataStoreValue.data["resource.meta.lastUpdated"] === mfrFacility.resource.meta.lastUpdated) {
+      if (dataStoreValue && dataStoreValue.data["resource_meta_lastUpdated"] === mfrFacility.resource.meta.lastUpdated) {
         payload.log(`Facility with MFR ID ${mfrFacility.resource.id} already exists in the datastore. No update needed`)
       } else if (dataStoreValue) {
         await axios.put(`${process.env.DHIS2_HOST}/dataStore/Dhis2-MFRApproval/${mfrFacility.resource.id}`, remappedFacility, {
