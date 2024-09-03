@@ -21,11 +21,6 @@ const latestUpdatedQueue = new Bull("Latest Updated", queueOptions);
 const webhookQueue = new Bull("Webhook", queueOptions);
 
 
-
-
-
-
-
 latestUpdatedQueue.process(async (payload, done) => {
     try {
         let lastDate = new Date();
@@ -36,172 +31,175 @@ latestUpdatedQueue.process(async (payload, done) => {
         payload.log(`Getting updated list of facilities from MFR since ${lastUpdate}`);
 
         const mfrService = new MFRService();
+        const dhis2Service = new DHIS2Service();
 
         await mfrService.getLatestUpdated(lastUpdate, async (mfrResponseData) => {
-            if (mfrResponseData && mfrResponseData.entry && mfrResponseData.entry.length > 0) {
-                const dhis2Service = new DHIS2Service();
+            if (mfrResponseData?.entry?.length > 0) {
                 payload.progress(40);
 
                 for (const entry of mfrResponseData.entry) {
                     const mfrFacility = entry.resource;
-                    const dhis2facility= await dhis2Service.getFacilityByMfrId(mfrFacility.id)
+                    const dhis2facility = await dhis2Service.getFacilityByMfrId(mfrFacility.id);
                     const lastUpdated = await dhis2Service.getMfrLastUpdated(mfrFacility.id);
                     const lastUpdatedDate = new Date(lastUpdated);
                     const mfrLastUpdatedDate = new Date(mfrFacility.meta.lastUpdated);
+
                     if (lastUpdatedDate.getTime() === mfrLastUpdatedDate.getTime()) {
-                            payload.log("Mfr facility " + mfrFacility.id + " lastUpdated is equal");
-                            continue;
-                        }
-                    if(mfrFacility.operationalStatus?.display === undefined || mfrFacility.operationalStatus?.display === "Duplicate"){
-                            payload.log(`Facility ${mfrFacility.id} duplicate or have no operational status`)
+                        payload.log(`MFR facility ${mfrFacility.id} lastUpdated is equal`);
+                        continue;
                     }
-                   else { 
-                    if (mfrFacility.extension === undefined) continue;
-                    if(dhis2facility.length > 0){
-                        
-                    const facilityId = mfrFacility.identifier.find(identifier => 
-                        identifier.type.coding.some(coding => coding.code === 'facilityId')
-                      ).value;
-                    const dhisId = mfrFacility.identifier.find(identifier => 
-                        identifier.type.coding.some(coding => coding.code === 'dhisId')
-                      ).value;
-                      
-                      const dhis = dhis2facility.find(dhis =>dhis.code)
-        
-                    if (dhis.code === facilityId && (dhis.id === dhisId || dhisId == null)) {
+
+                    if (!mfrFacility.operationalStatus?.display || mfrFacility.operationalStatus.display === "Duplicate") {
+                        payload.log(`Facility ${mfrFacility.id} is duplicate or has no operational status`);
+                        continue;
+                    }
+
+                    if (!mfrFacility.extension) continue;
+
+                    if (dhis2facility.length > 0) {
+                        const facilityId = mfrFacility.identifier.find(identifier =>
+                            identifier.type.coding.some(coding => coding.code === 'facilityId')
+                        )?.value;
+
+                        const dhisId = mfrFacility.identifier.find(identifier =>
+                            identifier.type.coding.some(coding => coding.code === 'dhisId')
+                        )?.value;
+
+                        let dhis = dhis2facility.find(dhis => dhis.code);
                         const reportingHierarchyExtension = mfrFacility.extension.find(ext => ext.url === 'reportingHierarchyId');
+                        if (dhis.code === facilityId && (dhis.id === dhisId || dhisId == null)) {
                             if (reportingHierarchyExtension && typeof reportingHierarchyExtension.valueString === 'string') {
                                 const hierarchyParts = reportingHierarchyExtension.valueString.split('/');
-                                if (hierarchyParts.length > 1) {
-                                    const parentFacilityId = hierarchyParts[1];
-                                    const dhisParentId = await dhis2Service.getMfrId(dhis.id)
-                                    const isPHCU = await mfrService.isPhcu(parentFacilityId);
-                                    entry.isParentPHCU = isPHCU;
-                                    if(parentFacilityId ===  dhisParentId || isPHCU === true){
-                                        console.log(parentFacilityId,":",dhisParentId)
-                                        const ownership = mfrFacility.extension.find(ext => ext.url === "FacilityInformation")
-                                            ?.extension.find(subExt => subExt.url === "ownership")?.valueString;
+                                const isPHCU = await mfrService.isPhcu(hierarchyParts[0])
+                                const ownership = mfrFacility.extension.find(ext => ext.url === "FacilityInformation")
+                                        ?.extension.find(subExt => subExt.url === "ownership")?.valueString;
 
-                                        const settlement = mfrFacility.extension.find(ext => ext.url === "FacilityInformation")
-                                            ?.extension.find(subExt => subExt.url === "settlement")?.valueString;
+                                    const settlement = mfrFacility.extension.find(ext => ext.url === "FacilityInformation")
+                                        ?.extension.find(subExt => subExt.url === "settlement")?.valueString;
 
-                                        const ft = mfrFacility.type.find(type => type.coding.some(coding => coding.code === "FT"))?.text;
-                                        console.log()
-                                        const dhisOwnership = dhis.attributeValues.find(attr => attr.attribute.id === process.env.DHIS2_OWNERSHIP)?.value;
-                                        const dhisSettlement = dhis.attributeValues.find(attr => attr.attribute.id === process.env.DHIS2_SETTLEMENT)?.value;
-                                        const dhisFt = dhis.attributeValues.find(attr => attr.attribute.id === process.env.DHIS2_FT)?.value;
-                                        updateRequired =false;
-                                        if(mfrFacility.name !== dhis.name){
-                                            dhis.name=mfrFacility.name;
-                                            updateRequired = true;
-                                        }
-                                        if (ownership !== dhisOwnership){
-                                            dhisOwnership = ownership;
-                                            updateRequired = true;
-                                        }
-                                        if (settlement !== dhisSettlement){
-                                            dhisSettlement = settlement;
-                                            updateRequired = true;
-                                        } 
-                                        if (ft !== dhisFt){
-                                            dhisFt = ft;
-                                            updateRequired = true;
-                                        }
-                                        if(dhis.geometry){
-                                            if (dhis.geometry.type === 'Point' && (dhis.geometry.coordinates[0] !== mfrFacility.position.longitude || dhis.geometry.coordinates[1] !== mfrFacility.position.latitude) ){
-                                                dhis.geometry.coordinates[0] = mfrFacility.position.longitude;
-                                                dhis.geometry.coordinates[1] = mfrFacility.position.latitude;
-                                                updateRequired = true;
-                                            }
-                                        }else if(dhis.geometry === null){
-                                            updateRequired = true;
-                                        }
-                                        
-                                        if (updateRequired) {
-                                            
-                                            const updatedFacility = {
-                                                name: dhis.name,
-                                                code: dhis.code,
-                                                shortName:dhis.shortName,
-                                                openingDate : dhis.openingDate,
-                                                attributeValues: dhis.attributeValues.map(attr => {
-                                                    if (attr.attribute.id === 'rN5rM32rGn2') {
-                                                        return { ...attr, value: dhisOwnership };
-                                                    } else if (attr.attribute.id === 'PPqNjqpFoRn') {
-                                                        return { ...attr, value: dhisSettlement };
-                                                    } else if (attr.attribute.id === 'jfNsdZwddzD') {
-                                                        return { ...attr, value: dhisFt };
-                                                    }
-                                                    return attr;
-                                                }),
-                                                geometry: {
-                                                    type: "Point",
-                                                    coordinates: [mfrFacility.position.longitude, mfrFacility.position.latitude]
-                                                }
-                                            };
+                                    const MfrIsPhcu = mfrFacility.extension.find(ext => ext.url === "FacilityInformation")
+                                        ?.extension.find(subExt => subExt.url === "isPrimaryHealthCareUnit")?.valueBoolean;
 
-                                            
-                                            await dhis2Service.updateFacility(dhis.id, updatedFacility);
-                                        } else {
-                                            await dhis2Service.saveFacilityToDataStore(entry, payload);
-                                        }
-                                        
+                                    const ft = mfrFacility.type.find(type => type.coding.some(coding => coding.code === "FT"))?.text;
 
-                                    }else{
-
+                                    const yearOpened = mfrFacility.extension.find(ext => ext.url === "FacilityInformation")
+                                        ?.extension.find(subExt => subExt.url === "yearOpened")?.valueDate;
+                                    const openingDate = new Date(yearOpened);
+                                    if(isPHCU === false){
+                                    let mfrParent = hierarchyParts[1];
+                                    const dhisMfrIsPchu = dhis.attributeValues.find(attr => attr.attribute.id === process.env.MFR_isPHCU)?.value;
+                                    const dhisOwnership = dhis.attributeValues.find(attr => attr.attribute.id === process.env.DHIS2_OWNERSHIP)?.value;
+                                    const dhisSettlement = dhis.attributeValues.find(attr => attr.attribute.id === process.env.DHIS2_SETTLEMENT)?.value;
+                                    const dhisFt = dhis.attributeValues.find(attr => attr.attribute.id === process.env.DHIS2_FT)?.value;
+                                    const dhisOperationalStatus = dhis.attributeValues.find(attr => attr.attribute.id === process.env.MFR_OperationalStatus)?.value;
+                                    const dhisParentId = await dhis2Service.getMfrId(dhis.parent.id);
+                                    
+                                    if ( ownership !== dhisOwnership || settlement !== dhisSettlement || ft !== dhisFt || dhisMfrIsPchu !== MfrIsPhcu || mfrFacility.operationalStatus.display !== dhisOperationalStatus) {
                                         await dhis2Service.saveFacilityToDataStore(entry, payload);
                                     }
-                                   
-    
-                                    
+                                    else{
+                                        if(mfrParent === dhisParentId || `${mfrParent}_PHCU` === dhisParentId ){
+                                            const updatedFacility = {
+                                                            name: mfrFacility.name,
+                                                            code: dhis.code,
+                                                            shortName: dhis.shortName,
+                                                            openingDate: openingDate,
+                                                            attributeValues: dhis.attributeValues.map(attr => {
+                                                                if (attr.attribute.id === process.env.MFR_LastUpdated) {
+                                                                    return { ...attr, value: mfrLastUpdatedDate };
+                                                                }
+                                                                return attr;
+                                                            }),
+                                                        };
+                                                         if((dhis.geometry && dhis.geometry.type === 'Point') || dhis.geometry === null){
+                                                            updatedFacility.geometry = {
+                                                                type: "Point",
+                                                                coordinates: [mfrFacility.position.longitude, mfrFacility.position.latitude]
+                                                            };
+                                                        }
+                
+                                                        await dhis2Service.updateFacility(dhis.id, updatedFacility, payload);  
+                                        } else {
+                                            await handleReportingHierarchy(mfrFacility, mfrService, entry, payload)
+                                            await dhis2Service.saveFacilityToDataStore(entry, payload);
+                                        }
+                                    }
                                 }
-                            }
+                                else if(isPHCU === true){
+                                    const phcufacility = await dhis2Service.getFacilityByMfrId(`${mfrFacility.id}_PHCU`)
+                                    const hc_pchu = phcufacility.find(dhis=>dhis.code);
+                                    const dhisMfrIsPchu = hc_pchu.attributeValues.find(attr => attr.attribute.id === process.env.MFR_isPHCU)?.value;
+                                    const dhisOwnership = hc_pchu.attributeValues.find(attr => attr.attribute.id === process.env.DHIS2_OWNERSHIP)?.value;
+                                    const dhisSettlement = hc_pchu.attributeValues.find(attr => attr.attribute.id === process.env.DHIS2_SETTLEMENT)?.value;
+                                    const dhisFt = hc_pchu.attributeValues.find(attr => attr.attribute.id === process.env.DHIS2_FT)?.value;
+                                    const dhisOperationalStatus = hc_pchu.attributeValues.find(attr => attr.attribute.id === process.env.MFR_OperationalStatus)?.value;
+                                    if ( ownership !== dhisOwnership || settlement !== dhisSettlement || ft !== dhisFt || dhisMfrIsPchu !== MfrIsPhcu || mfrFacility.operationalStatus.display !== dhisOperationalStatus) {
+                                        await handleReportingHierarchy(mfrFacility, mfrService, entry, payload)
+                                        await dhis2Service.saveFacilityToDataStore(entry, payload);
+                                    }
+                                    const parent = hc_pchu.parent.id;
+                                    const parentId = await dhis2Service.getMfrId(parent);
+                                    if(parentId === hierarchyParts[1]){
+                                        const updatedFacility = {
+                                            name: mfrFacility.name,
+                                            code: dhis.code,
+                                            shortName: dhis.shortName,
+                                            openingDate: openingDate,
+                                            attributeValues: dhis.attributeValues.map(attr => {
+                                                if (attr.attribute.id === process.env.MFR_LastUpdated) {
+                                                    return { ...attr, value: mfrLastUpdatedDate };
+                                                }
+                                                return attr;
+                                            }),
+                                        };
+                                         if((dhis.geometry && dhis.geometry.type === 'Point') || dhis.geometry === null){
+                                            updatedFacility.geometry = {
+                                                type: "Point",
+                                                coordinates: [mfrFacility.position.longitude, mfrFacility.position.latitude]
+                                            };
+                                        }
+                                        const updated_pchu = {
+                                            name: mfrFacility.name,
+                                            code: hc_pchu.code,
+                                            shortName: hc_pchu.shortName,
+                                            openingDate: openingDate,
+                                            attributeValues: hc_pchu.attributeValues.map(attr => {
+                                                if (attr.attribute.id === process.env.MFR_LastUpdated) {
+                                                    return { ...attr, value: mfrLastUpdatedDate };
+                                                }
+                                                return attr;
+                                            }),
+                                        }
+                                        if((hc_pchu.geometry && hc_pchu.geometry.type === 'Point') || hc_pchu.geometry === null){
+                                            updated_pchu.geometry = {
+                                                type: "Point",
+                                                coordinates: [mfrFacility.position.longitude, mfrFacility.position.latitude]
+                                            };
+                                        }
+                                        await dhis2Service.updateFacility(dhis.id, updatedFacility, payload);
+                                        await dhis2Service.updateFacility(hc_pchu.id, updated_pchu, payload);
 
-                    } else {
-                         const reportingHierarchyExtension = mfrFacility.extension.find(ext => ext.url === 'reportingHierarchyId');
-                            if (reportingHierarchyExtension && typeof reportingHierarchyExtension.valueString === 'string') {
-                                const hierarchyParts = reportingHierarchyExtension.valueString.split('/');
-                                entry.isParentPHCU = false;
-                                if (hierarchyParts.length > 1) {
-                                    const parentFacilityId = hierarchyParts[1];
-                                    const isPHCU = await mfrService.isPhcu(parentFacilityId);
-                                    entry.isParentPHCU = isPHCU;
-    
-                                    if (isPHCU === true) {
-                                        payload.log(`Parent facility ${parentFacilityId} of facility ${mfrFacility.id} is a PHCU.`);
+                                    }else{
+                                        await handleReportingHierarchy(mfrFacility, mfrService, entry, payload)
+                                        await dhis2Service.saveFacilityToDataStore(entry, payload);
+
                                     }
                                 }
                             }
-                    }
-                  
-                } else{
-                    const reportingHierarchyExtension = mfrFacility.extension.find(ext => ext.url === 'reportingHierarchyId');
-                        if (reportingHierarchyExtension && typeof reportingHierarchyExtension.valueString === 'string') {
-                            const hierarchyParts = reportingHierarchyExtension.valueString.split('/');
-                            entry.isParentPHCU = false;
-                            if (hierarchyParts.length > 1) {
-                                const parentFacilityId = hierarchyParts[1];
-                                const isPHCU = await mfrService.isPhcu(parentFacilityId);
-                                entry.isParentPHCU = isPHCU;
-
-                                if (isPHCU === true) {
-                                    payload.log(`Parent facility ${parentFacilityId} of facility ${mfrFacility.id} is a PHCU.`);
-                                }
-                            }
+                        } else {
+                            await handleReportingHierarchy(mfrFacility, mfrService, entry, payload)
+                            await dhis2Service.saveFacilityToDataStore(entry, payload);
                         }
-                    await dhis2Service.saveFacilityToDataStore(entry, payload);
+                    } else {
+                        await handleReportingHierarchy(mfrFacility, mfrService, entry, payload)
+                        await dhis2Service.saveFacilityToDataStore(entry, payload);
+                    }
                 }
-
-                }
-                   
-                   
 
                 payload.progress(100);
-            } 
-                    }else {
-                        sync = false;
-                    }
-                    
+            } else {
+                sync = false;
+            }
         });
 
         done();
@@ -209,11 +207,24 @@ latestUpdatedQueue.process(async (payload, done) => {
         done(err);
     }
 });
-
-
 module.exports.latestUpdatedQueue = latestUpdatedQueue;
 
+async function handleReportingHierarchy(mfrFacility, mfrService, entry, payload) {
+    const reportingHierarchyExtension = mfrFacility.extension.find(ext => ext.url === 'reportingHierarchyId');
+    if (reportingHierarchyExtension && typeof reportingHierarchyExtension.valueString === 'string') {
+        const hierarchyParts = reportingHierarchyExtension.valueString.split('/');
+        entry.isParentPHCU = false;
+        if (hierarchyParts.length > 1) {
+            const parentFacilityId = hierarchyParts[1];
+            const isPHCU = await mfrService.isPhcu(parentFacilityId);
+            entry.isParentPHCU = isPHCU;
 
+            if (isPHCU) {
+                payload.log(`Parent facility ${parentFacilityId} of facility ${mfrFacility.id} is a PHCU.`);
+            }
+        }
+    }
+}
 
 
 

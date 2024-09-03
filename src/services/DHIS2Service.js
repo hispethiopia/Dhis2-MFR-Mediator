@@ -178,7 +178,35 @@ getMfrLastUpdated = async function (mfrId) {
   }
 }
 
+ispchu = async function (dhisId) {
+  try {
+      const filter = `attributeValues.attribute.id:eq:${process.env.DHIS2_ATTRIBUTE_ID}`
+      const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits/${dhisId}?fields=attributeValues&${filter}`;
 
+      const response = await axios.get(dhisUrl, {
+          headers: {
+              'Authorization': `Basic ${Buffer.from(`${process.env.DHIS2_USER}:${process.env.DHIS2_PASSWORD}`).toString('base64')}`
+          }
+      });
+
+      // Assuming there's only one organisationUnit in the response
+      const organisationUnit = response.data;
+
+      if (organisationUnit) {
+        const attributeId = process.env.MFR_isPHCU;
+          const attribute = organisationUnit.attributeValues.find(attr => attr.attribute.id === attributeId);
+          if (attribute) {
+              return attribute.value;
+          }
+      }
+
+      return null; // Return null if the attribute is not found
+
+  } catch (error) {
+      winston.error(`Error fetching isPhcu from DHIS2: ${error.message}`);
+      throw error;
+  }
+}
 
 getFacilityByMfrId = async function (mfrId) {
   try {
@@ -188,7 +216,7 @@ getFacilityByMfrId = async function (mfrId) {
       ];
 
       const queryParams = filters.map(filter => `filter=${encodeURIComponent(filter)}`).join('&');
-      const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits?fields=geometry,code,name,shortName,openingDate,id,attributeValues,lastUpdated,parent&${queryParams}`;
+      const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits?fields=path,geometry,code,name,shortName,openingDate,id,attributeValues,lastUpdated,parent&${queryParams}`;
       
 
       const response = await axios.get(dhisUrl, {
@@ -203,7 +231,7 @@ getFacilityByMfrId = async function (mfrId) {
       throw error;
   }
 };
-updateFacility = async function (dhisId, updatedFacility) {
+updateFacility = async function (dhisId, updatedFacility,payload) {
   try {
     const dhisUrl = `${process.env.DHIS2_HOST}/organisationUnits/${dhisId}`;
     
@@ -217,15 +245,13 @@ updateFacility = async function (dhisId, updatedFacility) {
     if (response.status !== 200) {
       throw new Error(`Failed to update facility in DHIS2. Status: ${response.status}`);
     }
-    console.log('Facility'+updatedFacility.name+ 'directly updated ')
+    payload.log('Facility '+updatedFacility.name+ ' directly updated ')
     return response.data; 
   } catch (error) {
     winston.error(`Error updating facility with ID ${dhisId} in DHIS2: ${error.message}`);
     throw error;
   }
 };
-
-
 
 saveFacilityToDataStore = async function (mfrFacility,payload) {
     let dataStoreValue = null;

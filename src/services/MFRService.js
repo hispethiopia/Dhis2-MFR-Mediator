@@ -29,8 +29,6 @@ class MFRService {
     }
   }
 
-  
-
   async isPhcu(locationId) {
     const options = {
       uri: `${process.env.MFR_HOST}Location/${locationId}`,
@@ -123,7 +121,7 @@ async  getAllData(lastUpdated) {
 async  getLatestUpdated(lastUpdated, processBatch) {
   try {
     const mfrService = new MFRService();
-    const allData = await mfrService.getAllData(lastUpdated); 
+    let allData = await mfrService.getAllData(lastUpdated); 
     await processBatch({
       resourceType: "Bundle",
       type: "searchset",
