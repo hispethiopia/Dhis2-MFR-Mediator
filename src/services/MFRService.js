@@ -1,7 +1,10 @@
 const request = require('requestretry')
 const winston = require('winston')
 const axios = require('axios');
-const axiosRetry = require('axios-retry');
+const axiosRetry = require('axios-retry').default;
+const fs = require('fs');
+const path = require('path');
+
 const options = {
   method: 'GET',
   headers: {
@@ -15,8 +18,20 @@ const options = {
   retryStrategy: request.RetryStrategies.HTTPOrNetworkError // (default) retry on 5xx or network errors
 }
 
-class MFRService {
+axiosRetry(axios, {
+  retries: 10, 
+  retryDelay: (retryCount) => {
+    return retryCount * 5000; 
+  },
+  retryCondition: (error) => {
+    return error.response?.status >= 500 || error.code === 'ECONNABORTED';
+  },
+});
 
+const INDEX_FILE_PATH = path.join(__dirname, 'lastIndex.txt');
+
+
+class MFRService {
   async getOrganizationAffiliation(locationId) {
     winston.info("Getting organization affiliation under ", locationId)
     options.url = `${process.env.MFR_HOST}OrganizationAffiliation?rpt=${locationId}&_count=10000`
@@ -92,15 +107,34 @@ class MFRService {
   }
  }
 
+ getLastProcessedIndex() {
+  try {
+    if (fs.existsSync(INDEX_FILE_PATH)) {
+      const lastIndex = fs.readFileSync(INDEX_FILE_PATH, 'utf-8');
+      return parseInt(lastIndex, 10) || 0;
+    }
+  } catch (error) {
+    winston.error('Error reading last processed index:', error);
+  }
+  return 0;  
+}
 
+saveLastProcessedIndex(index) {
+  try {
+    fs.writeFileSync(INDEX_FILE_PATH, String(index), 'utf-8');
+    winston.info(`Saved last processed index: ${index}`);
+  } catch (error) {
+    winston.error('Error saving last processed index:', error);
+  }
+}
 
-async  getAllData(lastUpdated) {
+async  getAllData(lastUpdated, payload) {
   let nextUrl = `${process.env.MFR_HOST}Location?_lastUpdated=gt${lastUpdated}&_count=5000&_sort=_lastUpdated`;
   const allEntries = [];  
 
   try {
     while (nextUrl) {
-      winston.info("Fetching URL: ", nextUrl);
+      payload.log(`Fetching URL: ${nextUrl}`);
       const response = await axios.get(nextUrl);
       const responseBody = response.data;
 
@@ -118,19 +152,40 @@ async  getAllData(lastUpdated) {
   return allEntries;  
 }
 
-async  getLatestUpdated(lastUpdated, processBatch) {
+async  getLatestUpdated(lastUpdated, payload, processBatch) {
   try {
     const mfrService = new MFRService();
-    let allData = await mfrService.getAllData(lastUpdated); 
-    await processBatch({
-      resourceType: "Bundle",
-      type: "searchset",
-      entry: allData, 
-    });
+    let allData = await mfrService.getAllData(lastUpdated, payload); 
+    let startIndex = this.getLastProcessedIndex();
+
+    for (let i = startIndex; i < allData.length; i++) {
+      const entry = allData[i];
+
+      await processBatch({
+        resourceType: "Bundle",
+        type: "searchset",
+        entry: [entry], 
+      });
+
+      this.saveLastProcessedIndex(i + 1); 
+    }
+    payload.log(`Latest updated facility sync finished starting from ${lastUpdated}`)
+    this.deleteIndexFile();
   } catch (error) {
     throw new Error(`Error fetching and processing data: ${error.message}`);
   }
 }
+deleteIndexFile() {
+  try {
+    if (fs.existsSync(INDEX_FILE_PATH)) {
+      fs.unlinkSync(INDEX_FILE_PATH);
+      winston.info(`Deleted index file: ${INDEX_FILE_PATH}`);
+    }
+  } catch (error) {
+    winston.error('Error deleting index file:', error);
+  }
+}
+
 
 }
 
