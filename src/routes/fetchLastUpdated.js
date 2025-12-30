@@ -86,14 +86,7 @@ router.get('/webhook/:id', (req, res) => {
     res.send(response);
   })
 })
-<<<<<<< HEAD
-router.get('/webhook/:id', (req, res) => {
-  startSyncWebhook(req.params.id).then(response => {
-    res.send(response);
-  })
-})
-=======
->>>>>>> 1915354bed267eededf4631df4ad90901a58723c
+
 
 router.use('/mediator', serverAdapter.getRouter())
 
