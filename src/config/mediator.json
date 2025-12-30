@@ -84,33 +84,4 @@
       }
     ]
   }
-=======
-  ],
-  "endpoints": [
-    {
-      "name": "fetch Route",
-      "host": "localhost",
-      "path": "/fetch",
-      "port": "3001",
-      "primary": true,
-      "type": "http"
-    }
-  ],
-  "configDefs": [
-    {
-      "param": "HAPIFIREURL",
-      "displayName": "HAPI FIRE URL",
-      "description": "The URL of the HAPI FIRE service",
-      "type": "string",
-      "template": []
-    },
-    {
-      "param": "DHIS2URL",
-      "displayName": "DHIS2 Upstream URL",
-      "description": "The URL of the DHIS2 service upstream of the mediator",
-      "type": "string",
-      "template": []
-    }
-  ]
-}
->>>>>>> 1915354bed267eededf4631df4ad90901a58723c
+
