@@ -124,6 +124,11 @@ module.exports.remapMfrToDhis = (mfrObject) => {
     }
     flattenObject({ parentField: field, objectToFlatten: mfrObject[field], destinationObject: tempObject });
   });
+  if (tempObject.resource_operationalStatus_display === "Operational") {
+    tempObject.resource_extension_FacilityInformation_closedDate = "";
+  }
+
+  tempObject["reportingHierarchyId"]= tempObject["resource_extension_reportingHierarchyId"]
 
   return tempObject;
 };
