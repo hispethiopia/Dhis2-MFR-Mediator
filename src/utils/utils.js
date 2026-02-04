@@ -1,5 +1,6 @@
 'use strict'
 const URI = require('urijs')
+const { is } = require('urijs/src/SecondLevelDomains')
 
 const mfrMapping = {
   mfrId: "resource_id",
@@ -28,6 +29,7 @@ const mfrMapping = {
   altitude: "resource_position_altitude",
   managingOrganization: "resource_managingOrganization_reference",
   isParentPhcu: "isParentPhcu",  
+  isAmhara: "isAmhara"
 }
 
 const flattenObject = ({ parentField, objectToFlatten, destinationObject }) => {
@@ -129,6 +131,7 @@ module.exports.remapMfrToDhis = (mfrObject) => {
   }
 
   tempObject["reportingHierarchyId"]= tempObject["resource_extension_reportingHierarchyId"]
+  tempObject.isAmhara = tempObject.isAmhara || false;
 
   return tempObject;
 };

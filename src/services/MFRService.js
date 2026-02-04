@@ -85,8 +85,23 @@ class MFRService {
     const transformedFacility = {
       resource: facility,
       search: { mode: 'match' },
-      isParentPHCU: false 
+      isParentPHCU: false,
+      isAmhara : false,
   };
+  const hierarchyIdExt = facility.extension?.find(
+    ext => ext.url === 'reportingHierarchyId'
+  )
+  
+  const AMHARA_REGION_ID = "c3cca938-85ef-4d74-bc27-144f59d8e002"
+  
+  if (
+    hierarchyIdExt &&
+    typeof hierarchyIdExt.valueString === "string" &&
+    hierarchyIdExt.valueString.split('/').includes(AMHARA_REGION_ID)
+  ) {
+    transformedFacility.isAmhara = true
+    console.log(`Facility ${facility.id} is from Amhara region`)
+  }
   const reportingHierarchyExtension = facility.extension.find(ext => ext.url === 'reportingHierarchyId');
         if (reportingHierarchyExtension && typeof reportingHierarchyExtension.valueString === 'string') {
             const hierarchyParts = reportingHierarchyExtension.valueString.split('/');
