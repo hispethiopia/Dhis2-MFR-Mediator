@@ -235,6 +235,13 @@ latestUpdatedQueue.process(async (payload, done) => {
     });
 module.exports.latestUpdatedQueue = latestUpdatedQueue;
 
+// Run the latest-updated sync every Saturday at midnight
+latestUpdatedQueue.add({}, {
+    repeat: { cron: '0 0 * * 6' },
+    removeOnComplete: true,
+    removeOnFail: false
+});
+
 async function handleReportingHierarchy(mfrFacility, mfrService, entry, payload) {
     const AMHARA_REGION_ID = "c3cca938-85ef-4d74-bc27-144f59d8e002";
     const reportingHierarchyExtension = mfrFacility.extension.find(ext => ext.url === 'reportingHierarchyId');
@@ -242,9 +249,7 @@ async function handleReportingHierarchy(mfrFacility, mfrService, entry, payload)
         const hierarchyParts = reportingHierarchyExtension.valueString.split('/');
         entry.isParentPHCU = false;
         entry.isAmhara = false;
-        // -------------------------
         // Detect Amhara by ID
-        // -------------------------
         if (hierarchyParts.includes(AMHARA_REGION_ID)) {
             entry.isAmhara = true;
             console.log(`Facility ${mfrFacility.id} detected as AMHARA`);
