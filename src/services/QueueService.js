@@ -1,5 +1,5 @@
 const Bull = require("bull");
-// const winston = require('winston');
+const winston = require('winston');
 // const axios = require('axios');
 const MFRService = require('./MFRService.js');
 const DHIS2Service = require('./DHIS2Service.js');
@@ -229,18 +229,35 @@ latestUpdatedQueue.process(async (payload, done) => {
                     payload.progress(100);
                 } 
             }});
+            done();
         } catch (err) {
             done(err);
         }
     });
 module.exports.latestUpdatedQueue = latestUpdatedQueue;
 
-// Run the latest-updated sync every Saturday at midnight
-latestUpdatedQueue.add({}, {
-    repeat: { cron: '0 0 * * 6' },
-    removeOnComplete: true,
-    removeOnFail: false
-});
+// Run the latest-updated sync every Saturday at midnight (Addis Ababa time)
+const WEEKLY_SYNC_REPEAT = { cron: '0 0 * * 6', tz: 'Africa/Addis_Ababa' };
+
+async function scheduleWeeklySync(queue) {
+    // Drop schedules left over from an older cron/timezone so the sync never runs twice
+    for (const existing of await queue.getRepeatableJobs()) {
+        if (existing.cron !== WEEKLY_SYNC_REPEAT.cron || existing.tz !== WEEKLY_SYNC_REPEAT.tz) {
+            await queue.removeRepeatableByKey(existing.key);
+        }
+    }
+    await queue.add({}, {
+        repeat: WEEKLY_SYNC_REPEAT,
+        removeOnComplete: true,
+        removeOnFail: false
+    });
+    const [scheduled] = await queue.getRepeatableJobs();
+    winston.info(`Weekly sync scheduled (${scheduled.cron} ${scheduled.tz}), next run: ${new Date(scheduled.next).toISOString()}`);
+}
+module.exports.scheduleWeeklySync = scheduleWeeklySync;
+
+latestUpdatedQueue.on('error', (err) => winston.error(`Latest Updated queue error (check Redis at ${REDIS_HOST}:${REDIS_PORT}): ${err.message}`));
+scheduleWeeklySync(latestUpdatedQueue).catch((err) => winston.error(`Failed to schedule weekly sync: ${err.message}`));
 
 async function handleReportingHierarchy(mfrFacility, mfrService, entry, payload) {
     const AMHARA_REGION_ID = "c3cca938-85ef-4d74-bc27-144f59d8e002";
